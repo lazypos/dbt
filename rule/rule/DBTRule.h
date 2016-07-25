@@ -50,5 +50,6 @@ public:
 
 	static	std::pair<cards_type, int>	getType(const std::vector<int>& cards);
 	static	bool	isBigger(const std::vector<int>& cards_per, const std::vector<int>& cards_now);
+	static	int		getScore(const std::vector<int>& cards);
 };
 

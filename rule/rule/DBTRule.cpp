@@ -117,7 +117,7 @@ bool CDBTRule::isBoom(const std::vector<int>& cards)
 bool CDBTRule::isSister(const std::vector<int>& cards)
 {
 	size_t num = cards.size();
-	if (num < 6 || num > 24 || num % 2 != 0 || isJoker(cards[num - 1]))
+	if (num < 8 || num > 24 || num % 2 != 0 || isJoker(cards[num - 1]))
 		return false;
 	for (size_t i = 0; i < cards.size(); i += 2)
 		if (getValue(cards[i]) != getValue(cards[i + 1]))
@@ -261,4 +261,17 @@ bool CDBTRule::isBigger(const std::vector<int>& cards_per, const std::vector<int
 	if (!isNormal(per.first) && isNormal(now.first))
 		return false;
 	return true;
+}
+
+int CDBTRule::getScore(const std::vector<int>& cards)
+{
+	int score = 0;
+	for_each(cards.begin(), cards.end(), [&score](int i) {
+		int val = getValue(i);
+		if (val == 4)
+			score += 5;
+		else if (val == 9 || val == 12)
+			score += 10;
+	});
+	return score;
 }

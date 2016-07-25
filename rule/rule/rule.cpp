@@ -10,12 +10,14 @@ int main()
 {
 	std::array<int, 216> arr;
 	CDBTRule::shuffleCards(arr, 2);
+	vector<int> v1, v2;
+	v1.push_back(36);
+	v1.push_back(36);
+	v1.push_back(12);
+	v1.push_back(51);
+	v1.push_back(18);
+	cout << CDBTRule::isBigger(v1, v2) << CDBTRule::getScore(v1) << endl;
 
-	cout << CDBTRule::getWeight(1) << endl;
-	cout << CDBTRule::getWeight(53) << endl;
-	cout << CDBTRule::getWeight(2) << endl;
-	cout << CDBTRule::getWeight(4) << endl;
-	cout << CDBTRule::getWeight(19) << endl;
     return 0;
 }
 
