@@ -40,7 +40,7 @@ bool CDBTRule::checkCards(std::vector<int>& cards)
 
 int CDBTRule::getWeight(int card)
 {
-	//与序号相关，A/2/5特殊处理
+	//与序号相关，A/2/Jocket/5特殊处理
 	int nWeight = card - 8;
 	if (getValue(card) == 0 || getValue(card) == 1)
 		nWeight += 48;
@@ -51,12 +51,28 @@ int CDBTRule::getWeight(int card)
 	return nWeight;
 }
 
+int CDBTRule::getWeightNoRedFive(int card)
+{
+	//与序号相关，A/2/Jocket特殊处理
+	int nWeight = card - 8;
+	if (getValue(card) == 0 || getValue(card) == 1)
+		nWeight += 48;
+	if (isJoker(card))
+		nWeight += 8;
+	return nWeight;
+}
+
+bool CDBTRule::isNormal(const cards_type ty)
+{
+	return (ty != type_boom && ty != type_atom);
+}
+
 bool CDBTRule::isSingle(const std::vector<int>& cards)
 {
 	return cards.size() == 1;
 }
 
-bool CDBTRule::isPair(const std::vector<int>& cards)
+bool CDBTRule::isPairs(const std::vector<int>& cards)
 {
 	if (cards.size() == 2 && getValue(cards[0]) == getValue(cards[1])){
 		//jocker颜色一样
@@ -66,7 +82,7 @@ bool CDBTRule::isPair(const std::vector<int>& cards)
 	return false;
 }
 
-bool CDBTRule::isthreed(const std::vector<int>& cards)
+bool CDBTRule::isthree(const std::vector<int>& cards)
 {
 	if (cards.size() != 3 || isAtom(cards) || isJoker(cards[0]))
 		return false;
@@ -103,10 +119,10 @@ bool CDBTRule::isSister(const std::vector<int>& cards)
 	size_t num = cards.size();
 	if (num < 6 || num > 24 || num % 2 != 0 || isJoker(cards[num - 1]))
 		return false;
-
 	for (size_t i = 0; i < cards.size(); i += 2)
 		if (getValue(cards[i]) != getValue(cards[i + 1]))
 			return false;
+
 	//带A递增只允许345678910JQKA
 	if (getValue(cards[0]) == 0){
 		if (getValue(cards[num - 1] != 12))
@@ -118,10 +134,131 @@ bool CDBTRule::isSister(const std::vector<int>& cards)
 	}
 	//不带A
 	else {
-		for (size_t i = 0; i < cards.size() - 2; i += 2) {
+		for (size_t i = 0; i < cards.size()-2; i += 2) {
 			if (getValue(cards[i]) + 1 != getValue(cards[i + 2]))
 				return false;
 		}
 	}
+	return true;
+}
+
+bool CDBTRule::isPlane(const std::vector<int>& cards)
+{
+	size_t num = cards.size();
+	if (num < 9 || num > 36 || num % 3 != 0 || isJoker(cards[num - 1]))
+		return false;
+	for (size_t i = 0; i < cards.size(); i += 3)
+		if ((getValue(cards[i]) != getValue(cards[i + 1])) 
+			|| (getValue(cards[i]) != getValue(cards[i + 2])))
+			return false;
+
+	//带A递增只允许345678910JQKA
+	if (getValue(cards[0]) == 0) {
+		if (getValue(cards[num - 1] != 12))
+			return false;
+		for (size_t i = 3; i < cards.size() - 3; i += 3) {
+			if (getValue(cards[i]) + 1 != getValue(cards[i + 3]))
+				return false;
+		}
+	}
+	//不带A
+	else {
+		for (size_t i = 0; i < cards.size() - 3; i += 3) {
+			if (getValue(cards[i]) + 1 != getValue(cards[i + 3]))
+				return false;
+		}
+	}
+	return true;
+}
+
+bool CDBTRule::isThreetwo(const std::vector<int>& cards)
+{
+	if (cards.size() != 5 || isBoom(cards))
+		return false;
+	//AAABB
+	if (getValue(cards[0]) == getValue(cards[1]) == getValue(cards[2])){
+		if (isJoker(cards[3]) && cards[3] != cards[4])
+			return false;
+		if (isJoker(cards[0]) && (cards[0] != cards[1] || cards[0] != cards[2]))
+			return false;
+		if (getValue(cards[3]) != getValue(cards[4]))
+			return false;
+		return true;
+	}
+	//BBAAA
+	if (getValue(cards[2]) == getValue(cards[3]) == getValue(cards[4])){
+		if (isJoker(cards[0]) && cards[0] != cards[1])
+			return false;
+		if (isJoker(cards[2]) && (cards[2] != cards[3] || cards[2] != cards[4]))
+			return false;
+		if (getValue(cards[0]) != getValue(cards[1]))
+			return false;
+		return true;
+	}
+	return false;
+}
+
+std::pair<CDBTRule::cards_type, int> CDBTRule::getType(const std::vector<int>& cards)
+{
+	if (isSingle(cards))
+		return std::make_pair(type_singal, getWeight(cards[0]));
+	else if (isPairs(cards))
+		return std::make_pair(type_pairs, getWeightNoRedFive(cards[1]));
+	else if (isthree(cards))
+		return std::make_pair(type_three, getWeightNoRedFive(cards[2]));
+	else if (isBoom(cards))
+		return std::make_pair(type_boom, getWeightNoRedFive(cards[cards.size() - 1]));
+	else if (isAtom(cards))
+		return std::make_pair(type_atom, getWeight(cards[cards.size() - 1]));
+	else if (isSister(cards)) {
+		//带A
+		if (getValue(cards[0]) == 0)
+			return std::make_pair(type_sister, getWeightNoRedFive(cards[1]));
+		return std::make_pair(type_sister, getWeightNoRedFive(cards[cards.size() - 1]));
+	}
+	else if (isPlane(cards)) {
+		//带A
+		if (getValue(cards[0]) == 0)
+			return std::make_pair(type_plane, getWeightNoRedFive(cards[2]));
+		return std::make_pair(type_plane, getWeightNoRedFive(cards[cards.size() - 1]));
+	}
+	else if (isThreetwo(cards)){
+		//AAABB
+		if (getValue(cards[1]) == getValue(cards[2])){
+			return std::make_pair(type_three, getWeightNoRedFive(cards[2]));
+		}
+		//AABBB
+		return std::make_pair(type_three, getWeightNoRedFive(cards[4]));
+	}
+	return std::make_pair(type_unknow, 0);
+}
+
+bool CDBTRule::isBigger(const std::vector<int>& cards_per, const std::vector<int>& cards_now)
+{
+	auto per = getType(cards_per);
+	auto now = getType(cards_now);
+	//前一次最大或本次类型不对
+	if (now.first == type_unknow || per.second == 54)
+		return false;
+	if (isNormal(per.first) && isNormal(now.first)){
+		//必须类型数量一样
+		if (per.first == now.first && cards_per.size() == cards_now.size())
+			return now.second > per.second;
+		return false;
+	}
+	if (!isNormal(per.first) && !isNormal(now.first)) {
+		if ((per.first == type_boom && now.first == type_boom)
+			|| (per.first == type_atom && now.first == type_atom)){
+			//数量多的大
+			if (cards_per.size() == cards_now.size())
+				return now.second > per.second;
+			return cards_now.size() > cards_per.size();
+		}
+		if (per.first == type_atom && now.first == type_boom)
+			return false;
+		return true;
+	}
+	if (!isNormal(per.first) && isNormal(now.first))
+		return false;
 	return true;
 }
