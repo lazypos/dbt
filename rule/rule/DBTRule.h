@@ -21,6 +21,18 @@ public:
 
 	}cards_type;
 
+	typedef enum
+	{
+		over_not,
+		over_win,
+		over_win_dual,
+		over_win_quad,
+		over_lose,
+		over_lose_dual,
+		over_lose_quad,
+
+	}over_blance;
+
 public:
 	CDBTRule();
 	~CDBTRule();
@@ -51,5 +63,6 @@ public:
 	static	std::pair<cards_type, int>	getType(const std::vector<int>& cards);
 	static	bool	isBigger(const std::vector<int>& cards_per, const std::vector<int>& cards_now);
 	static	int		getScore(const std::vector<int>& cards);
+	static	over_blance	isOver(int seatId, const std::vector< std::pair<int, int> >& vecInfo);
 };
 

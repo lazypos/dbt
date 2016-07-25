@@ -275,3 +275,9 @@ int CDBTRule::getScore(const std::vector<int>& cards)
 	});
 	return score;
 }
+
+CDBTRule::over_blance CDBTRule::isOver(int seatId, 
+	const std::vector< std::pair<int, int> >& vecInfo)
+{
+	return over_not;
+}
