@@ -10,7 +10,7 @@ public:
 	typedef enum 
 	{
 		type_unknow,
-		type_singal = 0,
+		type_singal,
 		type_pairs,
 		type_three,
 		type_atom,
@@ -24,6 +24,7 @@ public:
 	typedef enum
 	{
 		over_not,
+		over_draw,
 		over_win,
 		over_win_dual,
 		over_win_quad,

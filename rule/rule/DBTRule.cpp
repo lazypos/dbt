@@ -279,5 +279,88 @@ int CDBTRule::getScore(const std::vector<int>& cards)
 CDBTRule::over_blance CDBTRule::isOver(int seatId, 
 	const std::vector< std::pair<int, int> >& vecInfo)
 {
+	int i = seatId;
+	//抓2个且一分不得
+	if (vecInfo[i % 4].first > 0 && vecInfo[(i + 2) % 4].first > 0 
+		&& vecInfo[(i + 1) % 4].first == vecInfo[(i + 3) % 4].first == 0
+		&& (vecInfo[(i + 1) % 4].second + vecInfo[(i + 3) % 4].second) == 0) 
+		return over_win_quad;
+	if (vecInfo[i % 4].first == 0 && vecInfo[(i + 2) % 4].first == 0 
+		&& vecInfo[(i + 1) % 4].first > 0 && vecInfo[(i + 3) % 4].first > 0
+		&& (vecInfo[i % 4].second + vecInfo[(i + 2) % 4].second) == 0)
+		return over_lose_quad;
+	
+	//抓2个且得不到85分
+	if (vecInfo[i % 4].first > 0 && vecInfo[(i + 2) % 4].first > 0 
+		&& vecInfo[(i + 1) % 4].first == 0 && vecInfo[(i + 3) % 4].first == 0
+		&& (vecInfo[(i + 1) % 4].second + vecInfo[(i + 3) % 4].second) < 85) 
+		return over_win_dual;
+	if (vecInfo[i % 4].first == 0 && vecInfo[(i + 2) % 4].first == 0 
+		&& vecInfo[(i + 1) % 4].first > 0 && vecInfo[(i + 3) % 4].first > 0
+		&& (vecInfo[(i + 0) % 4].second + vecInfo[(i + 2) % 4].second) < 85)
+		return over_lose_dual;
+	
+	//对方一个二游且得不到45分
+	if (vecInfo[(i + 0) % 4].first > 0 && vecInfo[(i + 2) % 4].first > 0 
+		&& (vecInfo[(i + 1) % 4].second + vecInfo[(i + 3) % 4].second) < 45) {
+		if ((vecInfo[(i + 1) % 4].first == 2 && vecInfo[(i + 3) % 4].first == 0) 
+			|| (vecInfo[(i + 1) % 4].first == 0 && vecInfo[(i + 3) % 4].first == 2))
+			return over_win_dual;
+	}
+	if (vecInfo[(i + 1) % 4].first > 0 && vecInfo[(i + 3) % 4].first > 0 
+		&& (vecInfo[(i + 0) % 4].second + vecInfo[(i + 2) % 4].second) < 45) {
+		if ((vecInfo[(i + 0) % 4].first == 2 && vecInfo[(i + 2) % 4].first == 0)
+			|| (vecInfo[(i + 0) % 4].first == 0 && vecInfo[(i + 2) % 4].first == 2))
+			return over_lose_dual;
+	}
+	
+	//跑上游且得200,对方已得85
+	if ((vecInfo[i % 4].first == 1 || vecInfo[(i + 2) % 4].first == 1) 
+		&& (vecInfo[i % 4].second + vecInfo[(i + 2) % 4].second) >= 200
+		&& (vecInfo[(i + 1) % 4].second + vecInfo[(i + 3) % 4].second) >= 85) 
+		return over_win;
+	if ((vecInfo[(i + 1) % 4].first == 1 || vecInfo[(i + 3) % 4].first == 1) 
+		&& (vecInfo[(i + 1) % 4].second + vecInfo[(i + 3) % 4].second) >= 200
+		&& (vecInfo[(i + 0) % 4].second + vecInfo[(i + 2) % 4].second) >= 85)
+		return over_lose;
+
+	//跑上游且得200，对方一个二游且得45
+	if ((vecInfo[(i + 0) % 4].first == 1 || vecInfo[(i + 2) % 4].first == 1)
+		&& (vecInfo[(i + 0) % 4].second + vecInfo[(i + 2) % 4].second) >= 200
+		&& (vecInfo[(i + 1) % 4].second + vecInfo[(i + 3) % 4].second) >= 45
+		&& (vecInfo[(i + 1) % 4].first == 2 || vecInfo[(i + 3) % 4].first == 2))
+		return over_win;
+	if ((vecInfo[(i + 1) % 4].first == 1 || vecInfo[(i + 3) % 4].first == 1)
+		&& (vecInfo[(i + 1) % 4].second + vecInfo[(i + 3) % 4].second) >= 200
+		&& (vecInfo[(i + 0) % 4].second + vecInfo[(i + 2) % 4].second) >= 45
+		&& (vecInfo[(i + 0) % 4].first == 2 || vecInfo[(i + 2) % 4].first == 2))
+		return over_lose;
+
+	//跑二游 且得245
+	if ((vecInfo[(i + 0) % 4].first == 2 || vecInfo[(i + 2) % 4].first == 2)
+		&& (vecInfo[(i + 1) % 4].first == 1 || vecInfo[(i + 3) % 4].first == 1)
+		&& (vecInfo[(i + 0) % 4].second + vecInfo[(i + 2) % 4].second) >= 245)
+		return over_win;
+	if ((vecInfo[(i + 1) % 4].first == 2 || vecInfo[(i + 3) % 4].first == 2)
+		&& (vecInfo[(i + 0) % 4].first == 1 || vecInfo[(i + 2) % 4].first == 1)
+		&& (vecInfo[(i + 1) % 4].second + vecInfo[(i + 3) % 4].second) >= 245)
+		return over_lose;
+
+	//一个没跑但得285
+	if (vecInfo[(i + 0) % 4].first == 0 && vecInfo[(i + 2) % 4].first == 0
+		&& vecInfo[(i + 1) % 4].first > 0 && vecInfo[(i + 3) % 4].first > 0
+		&& (vecInfo[(i + 0) % 4].second + vecInfo[(i + 2) % 4].second) >= 285)
+		return over_win;
+	if (vecInfo[(i + 1) % 4].first == 0 && vecInfo[(i + 3) % 4].first == 0
+		&& vecInfo[(i + 0) % 4].first > 0 && vecInfo[(i + 2) % 4].first > 0
+		&& (vecInfo[(i + 1) % 4].second + vecInfo[(i + 3) % 4].second) >= 285)
+		return over_lose;
+	
+	//如果一方的2人都跑了，但没有符合上面的规则，平局
+	if (vecInfo[(i + 0) % 4].first > 0 && vecInfo[(i + 2) % 4].first > 0)
+		return over_draw;
+	if (vecInfo[(i + 1) % 4].first > 0 && vecInfo[(i + 3) % 4].first > 0)
+		return over_draw;
+
 	return over_not;
 }
