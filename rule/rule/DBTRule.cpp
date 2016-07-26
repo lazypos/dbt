@@ -233,13 +233,17 @@ std::pair<CDBTRule::cards_type, int> CDBTRule::getType(const std::vector<int>& c
 	return std::make_pair(type_unknow, 0);
 }
 
-bool CDBTRule::isBigger(const std::vector<int>& cards_per, const std::vector<int>& cards_now)
+bool CDBTRule::isBigger(const std::vector<int>& cards_per, std::vector<int>& cards_now)
 {
+	if (!checkCards(cards_now) || cards_now.size() == 0)
+		return false;
 	auto per = getType(cards_per);
 	auto now = getType(cards_now);
 	//前一次最大或本次类型不对
 	if (now.first == type_unknow || per.second == 54)
 		return false;
+	if (cards_per.size() == 0)
+		return true;
 	if (isNormal(per.first) && isNormal(now.first)){
 		//必须类型数量一样
 		if (per.first == now.first && cards_per.size() == cards_now.size())

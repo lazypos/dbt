@@ -62,7 +62,7 @@ public:
 	static	bool	isThreetwo(const std::vector<int>& cards);
 
 	static	std::pair<cards_type, int>	getType(const std::vector<int>& cards);
-	static	bool	isBigger(const std::vector<int>& cards_per, const std::vector<int>& cards_now);
+	static	bool	isBigger(const std::vector<int>& cards_per, std::vector<int>& cards_now);
 	static	int		getScore(const std::vector<int>& cards);
 	static	over_blance	isOver(int seatId, const std::vector< std::pair<int, int> >& vecInfo);
 };
