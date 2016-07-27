@@ -38,11 +38,9 @@ public:
 	CDBTRule();
 	~CDBTRule();
 
-	static void shuffleCards(std::array<int,216>& arrCards, int times);
-
+	static void		shuffleCards(std::array<int,216>& arrCards, int times);
 
 	static	bool	checkCards(std::vector<int>& cards);
-
 	static	int		getValue(int card) { return card / 4; };
 	static	int		getColor(int card) { return card % 4; }
 	static  bool	isJoker(int card) { return getValue(card) == 13; };
@@ -50,7 +48,6 @@ public:
 	static  int		getWeight(int card);
 	static	int		getWeightNoRedFive(int card);
 	static	bool	isNormal(const cards_type ty);
-
 
 	static	bool	isSingle(const std::vector<int>& cards);
 	static  bool	isPairs(const std::vector<int>& cards);
