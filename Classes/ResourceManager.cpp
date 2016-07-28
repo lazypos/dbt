@@ -14,6 +14,7 @@ CResourceManager::~CResourceManager()
 void CResourceManager::loadResource()
 {
 	loadCardResource();
+	loadDeskResource();
 }
 
 void CResourceManager::loadCardResource()
@@ -53,10 +54,23 @@ void CResourceManager::loadCardResource()
 	SpriteFrame* puke = nullptr;
 	puke = SpriteFrame::create("poker_surface.png", Rect(0 * card_weight, 0, card_weight, card_height));
 	SpriteFrameCache::getInstance()->addSpriteFrame(puke, "front");
-	puke = SpriteFrame::create("poker_surface.png", Rect(1+1 * card_weight, 0, card_weight, card_height));
+	puke = SpriteFrame::create("poker_surface.png", Rect(1 + 1 * card_weight, 0, card_weight, card_height));
 	SpriteFrameCache::getInstance()->addSpriteFrame(puke, "r_joker");
-	puke = SpriteFrame::create("poker_surface.png", Rect(1+2 * card_weight, 0, card_weight, card_height));
+	puke = SpriteFrame::create("poker_surface.png", Rect(1 + 2 * card_weight, 0, card_weight, card_height));
 	SpriteFrameCache::getInstance()->addSpriteFrame(puke, "b_joker");
-	puke = SpriteFrame::create("poker_surface.png", Rect(1+3 * card_weight, 0, card_weight, card_height));
+	puke = SpriteFrame::create("poker_surface.png", Rect(1 + 3 * card_weight, 0, card_weight, card_height));
 	SpriteFrameCache::getInstance()->addSpriteFrame(puke, "back");
+}
+
+void CResourceManager::loadDeskResource()
+{
+	//¼ÓÔØ³öÅÆ°´Å¥
+#define button_weight 152
+#define button_height 61
+	SpriteFrame* button = nullptr;
+	button = SpriteFrame::create("poker_play_card.png", Rect(0, 0, button_weight, button_height));
+	SpriteFrameCache::getInstance()->addSpriteFrame(button, "noputbtn");
+	button = SpriteFrame::create("poker_play_card.png", Rect(button_weight, 0, button_weight, button_height));
+	SpriteFrameCache::getInstance()->addSpriteFrame(button, "putbtn");
+
 }

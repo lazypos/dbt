@@ -13,9 +13,7 @@ CardSprite::~CardSprite()
 CardSprite* CardSprite::createCardSprite(int seq)
 {
 	ostringstream os;
-	//cardSpritePtr cardptr = make_shared<CardSprite>();
-	CardSprite *cardptr = new CardSprite;
-	cardptr->autorelease();
+	CardSprite *cardptr = CardSprite::create();
 	cardptr->setSeq(seq);
 	if (seq == 52)
 		cardptr->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("b_joker"));
@@ -32,15 +30,15 @@ CardSprite* CardSprite::createCardSprite(int seq)
 		else
 			os << "r_num" << val;
 		auto num = Sprite::createWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(os.str()));
-		num->setScale(0.4);
+		num->setScale(float(0.4));
 		num->setPosition(Vec2(12, cardSize.height - 20));
 		cardptr->addChild(num);
 		//Ìí¼Ó»¨É«
 		os.str("");
 		os << "flower" << col;
 		Sprite *color = Sprite::createWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(os.str()));
-		color->setScale(0.4);
-		color->setPosition(Vec2(12, cardSize.height - 50));
+		color->setScale(float(0.4));
+		color->setPosition(Vec2(12, cardSize.height - 45));
 		cardptr->addChild(color);
 	}
 	return cardptr;

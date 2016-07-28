@@ -18,10 +18,15 @@ public:
 	
 	void	setSeq(int seq) { _cardSeq = seq; };
 	int		getSeq() { return _cardSeq; };
+	void	setSelect(bool state) { _bSelected = state; };
+	int		getSelect() { return _bSelected; };
 
 	static	CardSprite* createCardSprite(int seq);
+
+	CREATE_FUNC(CardSprite);
 private:
 	int		_cardSeq = -1;
+	bool	_bSelected = false;
 };
 
 #endif
