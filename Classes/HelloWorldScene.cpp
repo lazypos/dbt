@@ -3,6 +3,7 @@
 #include "CardSprite.h"
 #include "ResourceManager.h"
 #include <UI/UIButton.h>
+#include "DBTRule.h"
 
 USING_NS_CC;
 
@@ -93,11 +94,11 @@ bool HelloWorld::onTouchBegan(Touch *touch, Event *event)
 			card_per = card;
 			if (card->getSelect()) {
 				card->setSelect(false);
-				card->setPosition(Vec2(card->getPositionX(), card->getPositionY() - 30));
+				card->setPosition(Vec2(card->getPositionX(), 100));
 			}
 			else {
 				card->setSelect(true);
-				card->setPosition(Vec2(card->getPositionX(), card->getPositionY() + 30));
+				card->setPosition(Vec2(card->getPositionX(), 130));
 			}
 			break;
 		}
@@ -121,11 +122,11 @@ void HelloWorld::onTouchMoved(Touch *touch, Event *event)
 				card_per = card;
 				if (card->getSelect()) {
 					card->setSelect(false);
-					card->setPosition(Vec2(card->getPositionX(), card->getPositionY() - 30));
+					card->setPosition(Vec2(card->getPositionX(), 100));
 				}
 				else {
 					card->setSelect(true);
-					card->setPosition(Vec2(card->getPositionX(), card->getPositionY() + 30));
+					card->setPosition(Vec2(card->getPositionX(), 130));
 				}
 			}
 			break;
@@ -136,6 +137,14 @@ void HelloWorld::onTouchMoved(Touch *touch, Event *event)
 void HelloWorld::touchEvent(Ref *pSender, Widget::TouchEventType type)
 {
 	if (Widget::TouchEventType::ENDED == type){
+		vector<int> v;
+		for (auto &it : lstCards)
+			if (it->getSelect())
+				v.push_back(it->getSeq());
+		auto pt = CDBTRule::getType(v);
+		if (pt.first == CDBTRule::type_unknow)
+			MessageBox("dsadsa", "1");
+		return;
 
 		//是否有牌被选中
 		bool bselected = false;
@@ -147,6 +156,7 @@ void HelloWorld::touchEvent(Ref *pSender, Widget::TouchEventType type)
 		}
 		if (!bselected)
 			return;
+
 
 		//先清理之前的牌
 		for (auto &it : perCards)
