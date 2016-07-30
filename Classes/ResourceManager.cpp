@@ -14,6 +14,7 @@ CResourceManager::~CResourceManager()
 void CResourceManager::loadResource()
 {
 	loadCardResource();
+	loadLoginResource();
 	loadDeskResource();
 }
 
@@ -60,6 +61,23 @@ void CResourceManager::loadCardResource()
 	SpriteFrameCache::getInstance()->addSpriteFrame(puke, "b_joker");
 	puke = SpriteFrame::create("poker_surface.png", Rect(1 + 3 * card_weight, 0, card_weight, card_height));
 	SpriteFrameCache::getInstance()->addSpriteFrame(puke, "back");
+}
+
+void CResourceManager::loadLoginResource()
+{
+#define login_weight	350
+#define login_height	60
+	SpriteFrame* login = nullptr;
+	login = SpriteFrame::create("login.png", Rect(0, 0, login_weight, login_height));
+	SpriteFrameCache::getInstance()->addSpriteFrame(login, "login");
+	login = SpriteFrame::create("nick.png", Rect(0, 0, login_weight, login_height));
+	SpriteFrameCache::getInstance()->addSpriteFrame(login, "nick");
+	login = SpriteFrame::create("pass.png", Rect(0, 0, login_weight, login_height));
+	SpriteFrameCache::getInstance()->addSpriteFrame(login, "pass");
+	login = SpriteFrame::create("rpass.png", Rect(0, 0, login_weight, login_height));
+	SpriteFrameCache::getInstance()->addSpriteFrame(login, "rpass");
+	login = SpriteFrame::create("sep.png", Rect(0, 0, 10, 768));
+	SpriteFrameCache::getInstance()->addSpriteFrame(login, "sep");
 }
 
 void CResourceManager::loadDeskResource()

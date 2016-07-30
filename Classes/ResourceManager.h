@@ -16,7 +16,9 @@ public:
 
 private:
 	void	loadCardResource();
+	void	loadLoginResource();
 	void	loadDeskResource();
+
 };
 
 typedef CSingleton<CResourceManager>	resourceMgr;

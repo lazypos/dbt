@@ -1,6 +1,7 @@
 #include "AppDelegate.h"
 #include "HelloWorldScene.h"
 #include "LoginScene.h"
+#include "ResourceManager.h"
 
 USING_NS_CC;
 
@@ -76,6 +77,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // create a scene. it's an autorelease object
     //auto scene = HelloWorld::createScene();
+	resourceMgr::instance()->loadResource();
 	auto scene = CLoginScene::createScene();
     // run
     director->runWithScene(scene);
