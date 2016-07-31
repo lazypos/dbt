@@ -5,19 +5,31 @@
 #include "UI/UIEditBox/UIEditBox.h"
 USING_NS_CC;
 
-class CLoginScene : public cocos2d::Layer
+class CLoginScene : public cocos2d::Layer, public ui::EditBoxDelegate
 {
 public:
     static cocos2d::Scene* createScene();
 
     virtual bool init();
+
+	CREATE_FUNC(CLoginScene);
    
-    CREATE_FUNC(CLoginScene);
+protected:
+	void onLoginTouch(Ref *pSender, ui::Widget::TouchEventType type);
+	void onRegistTouch(Ref *pSender, ui::Widget::TouchEventType type);
+
+	void editBoxReturn(ui::EditBox* editBox) {};
 
 private:
-	ui::EditBox *_editName;
-	ui::EditBox *_editPassword;
-	ui::EditBox *_editEmail;
+	ui::EditBox *_editLoginName;
+	ui::EditBox *_editLoginPassword;
+	ui::EditBox *_editRegName;
+	ui::EditBox *_editRegNick;
+	ui::EditBox *_editRegPass;
+	ui::EditBox *_editRegRepeatPass;
+
+	ui::Button* btlogin;
+	ui::Button* btreg;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

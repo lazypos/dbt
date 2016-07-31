@@ -65,6 +65,7 @@ void CResourceManager::loadCardResource()
 
 void CResourceManager::loadLoginResource()
 {
+	//login
 #define login_weight	350
 #define login_height	60
 	SpriteFrame* login = nullptr;
@@ -78,6 +79,10 @@ void CResourceManager::loadLoginResource()
 	SpriteFrameCache::getInstance()->addSpriteFrame(login, "rpass");
 	login = SpriteFrame::create("sep.png", Rect(0, 0, 10, 768));
 	SpriteFrameCache::getInstance()->addSpriteFrame(login, "sep");
+
+	//hall
+	login = SpriteFrame::create("add_desk_bg.png", Rect(0, 0, 323, 60));
+	SpriteFrameCache::getInstance()->addSpriteFrame(login, "add_desk_bg");	
 }
 
 void CResourceManager::loadDeskResource()

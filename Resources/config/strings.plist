@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>data</key>
+    <dict>
+        <key>title</key>
+        <string>大板同 V1.2	官网：www.dagouge.com</string>
+	<key>login</key>
+        <string>登录账号</string>
+	<key>nick</key>
+        <string>游戏昵称</string>
+	<key>pass</key>
+        <string>密码</string>
+	<key>rpass</key>
+        <string>重复密码</string>
+	<key>desk</key>
+        <string>输入桌号</string>
+    </dict>
+    <key>metadata</key>
+    <dict>
+        <key>format</key>
+        <integer>1</integer>
+    </dict>
+</dict>
+</plist>
