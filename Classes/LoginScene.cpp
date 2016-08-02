@@ -154,11 +154,11 @@ void CLoginScene::onRegistTouch(Ref *pSender, ui::Widget::TouchEventType type)
 			MessageBox("用户名只能用英文或者数字,长度在4-8个字符之间！", "提示");
 			return;
 		}
-		if (!checkUserIegal(nick)) {
+		if (!checkNickIegal(nick)) {
 			MessageBox("昵称只能用不能用特殊字符,长度在5-10个字符之间！", "提示");
 			return;
 		}
-		if (!checkUserIegal(password)) {
+		if (!checkPassIegal(password)) {
 			MessageBox("密码只允许用字母、符号、标点，请不要带特殊符号,长度在6-12个字符之间！", "提示");
 			return;
 		}
