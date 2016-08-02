@@ -116,14 +116,14 @@ bool CLoginScene::init()
 
 void CLoginScene::onLoginTouch(Ref *pSender, ui::Widget::TouchEventType type)
 {
-	btlogin->setEnabled(false);
 	if (type == ui::Widget::TouchEventType::ENDED){
+		//btlogin->setEnabled(false);
 		Configuration::getInstance()->setValue("loginname", Value(_editLoginName->getText()));
 		//测试用，实际是发送到服务器
 		Scene *hall = CHallScene::createScene();
 		Director::getInstance()->replaceScene(hall);
+		//btlogin->setEnabled(true);
 	}
-	btlogin->setEnabled(true);
 }
 
 void CLoginScene::onRegistTouch(Ref *pSender, ui::Widget::TouchEventType type)

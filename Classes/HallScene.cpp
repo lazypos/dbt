@@ -3,6 +3,8 @@
 #include "CardSprite.h"
 #include "ResourceManager.h"
 #include "ui/UIButton.h"
+#include "DeskScene.h"
+#include "MessageQueue.h"
 
 USING_NS_CC;
 
@@ -51,23 +53,59 @@ bool CHallScene::init()
 	_editDesk->setInputMode(ui::EditBox::InputMode::NUMERIC);
 	this->addChild(_editDesk,2);
 
+	//注册观察者
+	__NotificationCenter::getInstance()->addObserver(this, CC_CALLFUNCO_SELECTOR(CHallScene::ObserverAddDesk), "hall", nullptr);
+
     return true;
 }
 
 void CHallScene::OnFindDesk(Ref *pSender, ui::Widget::TouchEventType type)
 {
-	if (type == ui::Widget::TouchEventType::ENDED) {
-		if (atoi(_editDesk->getText()) == 0)
+	if (type == ui::Widget::TouchEventType::ENDED && !bsend) {
+		string deskNum = _editDesk->getText();
+		if (atoi(_editDesk->getText()) == 0) {
 			cocos2d::MessageBox("桌号只能是大于0的数字！", "Warning");
+			return;
+		}
+		//发送
+		if (messageQueue::instance()->sendMessage("cmd=desk;type=find;num="+deskNum))
+			bsend = true;
 	}
 }
 
 void CHallScene::OnCreateDesk(Ref *pSender, ui::Widget::TouchEventType type)
 {
-
+	if (type == ui::Widget::TouchEventType::ENDED && !bsend) {
+		//发送
+		if (messageQueue::instance()->sendMessage("cmd=desk;type=create"))
+			bsend = true;
+	}
 }
 
 void CHallScene::OnFastAddDesk(Ref *pSender, ui::Widget::TouchEventType type)
 {
+	if (type == ui::Widget::TouchEventType::ENDED && !bsend) {
+		//发送
+		if (messageQueue::instance()->sendMessage("cmd=desk;type=add"))
+			bsend = true;
+	}
+}
 
+void CHallScene::ObserverAddDesk(Ref* sendmsg)
+{
+	__String* p = (__String*)sendmsg;
+	if (p->_string == "ok") {
+		//加入桌子成功，取消观察，场景切换
+		__NotificationCenter::getInstance()->removeObserver(this, "hall");
+		Scene *scene = CDeskScene::createScene();
+		Director::getInstance()->replaceScene(scene);
+		return;
+	}
+	bsend = false;
+	if (p->_string == "full") {
+		MessageBox("该桌号已满, 加入其它桌号。", "提示");
+		return;
+	}
+	MessageBox("该桌号不存在, 加入其它桌号。", "提示");
+	return;
 }

@@ -20,11 +20,14 @@ public:
 	void OnFastAddDesk(Ref *pSender, ui::Widget::TouchEventType type);
 
 	void editBoxReturn(ui::EditBox* editBox) {};
+	void ObserverAddDesk(Ref* sendmsg);
+
 private:
 	ui::EditBox *_editDesk;
 	ui::Button* btCreadAdd;
 	ui::Button* btFastAdd;
 	ui::Button* btFindAdd;
+	bool		bsend = false;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

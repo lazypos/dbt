@@ -2,6 +2,7 @@
 #include "HelloWorldScene.h"
 #include "LoginScene.h"
 #include "ResourceManager.h"
+#include "MessageQueue.h"
 
 USING_NS_CC;
 
@@ -37,7 +38,6 @@ static int register_all_packages()
 
 bool AppDelegate::applicationDidFinishLaunching() {
 	Configuration::getInstance()->loadConfigFile("config/strings.plist");
-
     // initialize director
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
@@ -51,7 +51,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     }
 
     // turn on display FPS
-    director->setDisplayStats(true);
+    director->setDisplayStats(false);
 
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0f / 60);
@@ -79,6 +79,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // create a scene. it's an autorelease object
     //auto scene = HelloWorld::createScene();
+	if (!messageQueue::instance()->start()){
+		MessageBox("连接服务器失败！请检查网络是否正常。","错误");
+		//return false;
+	}
 	resourceMgr::instance()->loadResource();
 	auto scene = CLoginScene::createScene();
     // run
