@@ -20,6 +20,8 @@ protected:
 
 	void editBoxReturn(ui::EditBox* editBox) {};
 
+	void ObserverLoginRegiste(Ref* sendmsg);
+
 private:
 	ui::EditBox *_editLoginName;
 	ui::EditBox *_editLoginPassword;
@@ -30,6 +32,8 @@ private:
 
 	ui::Button* btlogin;
 	ui::Button* btreg;
+
+	bool	bSend = false;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

@@ -3,19 +3,22 @@
 
 CMessageQueue::CMessageQueue()
 {
+	WSAData data;
+	WSAStartup(MAKEWORD(2, 2), &data);
 }
 
 
 CMessageQueue::~CMessageQueue()
 {
+	WSACleanup();
 }
 
 bool CMessageQueue::start()
 {
 	memset(&_servAddr, 0, sizeof(_servAddr));
 	_servAddr.sin_family = AF_INET;
-	_servAddr.sin_port = htons(166);
-	_servAddr.sin_addr.s_addr = inet_addr("172.16.0.80");
+	_servAddr.sin_port = htons(5183);
+	_servAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	
 	_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (_sock == 0)

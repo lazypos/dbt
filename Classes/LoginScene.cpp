@@ -4,6 +4,8 @@
 #include "ResourceManager.h"
 #include "ui/UIButton.h"
 #include "HallScene.h"
+#include "CommonFunction.h"
+#include "MessageQueue.h"
 
 USING_NS_CC;
 
@@ -111,26 +113,83 @@ bool CLoginScene::init()
 	_editRegRepeatPass->setInputMode(ui::EditBox::InputMode::SINGLE_LINE);
 	this->addChild(_editRegRepeatPass);
 
+	//注册观察者
+	__NotificationCenter::getInstance()->addObserver(this, CC_CALLFUNCO_SELECTOR(CLoginScene::ObserverLoginRegiste), "logn", nullptr);
     return true;
 }
 
 void CLoginScene::onLoginTouch(Ref *pSender, ui::Widget::TouchEventType type)
 {
-	if (type == ui::Widget::TouchEventType::ENDED){
-		//btlogin->setEnabled(false);
-		Configuration::getInstance()->setValue("loginname", Value(_editLoginName->getText()));
-		//测试用，实际是发送到服务器
-		Scene *hall = CHallScene::createScene();
-		Director::getInstance()->replaceScene(hall);
-		//btlogin->setEnabled(true);
+	if (type == ui::Widget::TouchEventType::ENDED && !bSend){
+		//检查是否合法
+		string user = _editLoginName->getText();
+		string password = _editLoginPassword->getText();
+		if (!checkUserIegal(user)){
+			MessageBox("用户名只能用英文或者数字,长度在4-8个字符之间！", "提示");
+			return;
+		}
+		if (!checkUserIegal(password)) {
+			MessageBox("密码只允许用字母、符号、标点，请不要带特殊符号,长度在6-12个字符之间！", "提示");
+			return;
+		}
+		char *rst = nullptr;
+		base64Encode((unsigned char*)password.c_str(), password.length(), &rst);
+		password = string(rst);
+		free(rst);
+		ostringstream os;
+		os << "cmd=login;type=login;user=" << user
+			<< ";pass=" << password;
+		messageQueue::instance()->sendMessage(os.str());
 	}
 }
 
 void CLoginScene::onRegistTouch(Ref *pSender, ui::Widget::TouchEventType type)
 {
-	btreg->setEnabled(false);
-	btreg->setEnabled(true);
+	if (type == ui::Widget::TouchEventType::ENDED && !bSend) {
+		string user = _editRegName->getText();
+		string nick = _editRegNick->getText();
+		string password = _editRegPass->getText();
+		string rpass = _editRegRepeatPass->getText();
+		if (!checkUserIegal(user)) {
+			MessageBox("用户名只能用英文或者数字,长度在4-8个字符之间！", "提示");
+			return;
+		}
+		if (!checkUserIegal(nick)) {
+			MessageBox("昵称只能用不能用特殊字符,长度在5-10个字符之间！", "提示");
+			return;
+		}
+		if (!checkUserIegal(password)) {
+			MessageBox("密码只允许用字母、符号、标点，请不要带特殊符号,长度在6-12个字符之间！", "提示");
+			return;
+		}
+		if (password != rpass) {
+			MessageBox("两次密码输入不一致！", "提示");
+			return;
+		}
+
+		char *rst = nullptr;
+		base64Encode((unsigned char*)password.c_str(), password.length(), &rst);
+		password = string(rst);
+		free(rst);
+		ostringstream os;
+		os << "cmd=login;type=regist;user=" << user
+			<< ";nick=" << nick
+			<< ";pass=" << password;
+		messageQueue::instance()->sendMessage(os.str());
+	}
 }
 
+void CLoginScene::ObserverLoginRegiste(Ref* sendmsg)
+{
+	__String* p = (__String*)sendmsg;
+	//解析字符串
+	if (true){
+		//登陆成功，取消观察，场景切换
+		__NotificationCenter::getInstance()->removeObserver(this, "logn");
+		Scene *hall = CHallScene::createScene();
+		Director::getInstance()->replaceScene(hall);
+	}
+	bSend = false;
+}
 
 
