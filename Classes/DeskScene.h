@@ -8,9 +8,9 @@ USING_NS_CC;
 
 typedef struct
 {
-	Sprite* nick = nullptr;
-	Sprite* win = nullptr;
-	Sprite* surplus = nullptr;
+	Vec2 nick;
+	Vec2 win;
+	Vec2 surplus;
 	vector<CardSprite*> perCards;
 
 }st_player_info;
@@ -31,6 +31,7 @@ public:
 
 	void update(float dt);
 	void ObserverPlaying(Ref* sendmsg);
+	vector<int>	getSelectCardList();
 private:
 	ui::Button* _btReturn;
 	ui::Button* _btReady;
@@ -43,6 +44,7 @@ private:
 	vector<CardSprite*>		_lstCards;
 	CardSprite* card_per =	nullptr;
 	vector<st_player_info>	_vecPlayers;
+	vector<int>				_vecPerCards;
 };
 
 #endif // __HELLOWORLD_SCENE_H__
