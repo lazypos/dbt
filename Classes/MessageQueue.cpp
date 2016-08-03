@@ -35,7 +35,7 @@ bool CMessageQueue::sendMessage(const string& str)
 {
 	size_t len = 0;
 	while (len < str.length()) {
-		size_t n = send(_sock, str.c_str() + len, str.length() - len, 0);
+		int n = send(_sock, str.c_str() + len, str.length() - len, 0);
 		if (n <= 0){
 			MessageBox("与服务器断开连接!","error");
 			return false;
@@ -48,7 +48,7 @@ bool CMessageQueue::sendMessage(const string& str)
 bool CMessageQueue::recvMessage(string& text)
 {
 	size_t len = 0;
-	size_t n = recv(_sock, (char*)&len, 4, 0);
+	int n = recv(_sock, (char*)&len, 4, 0);
 	if (n != 2 || len < 0) {
 		MessageBox("从服务器接收数据错误.", "error");
 		return false;

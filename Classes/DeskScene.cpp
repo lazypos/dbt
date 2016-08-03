@@ -7,6 +7,8 @@
 
 USING_NS_CC;
 
+#define  DEF_cardsep 18
+
 Scene* CDeskScene::createScene()
 {
     auto scene = Scene::create();
@@ -22,8 +24,31 @@ bool CDeskScene::init()
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 
-	this->scheduleUpdate();
+	_btReturn = ui::Button::create("add_desk.png", "add_desk_press.png", "add_desk_press.png");
+	_btReturn->setPosition(Vec2(visibleSize.width - _btReturn->getContentSize().width / 2, 
+		visibleSize.height - _btReturn->getContentSize().height / 2));
+	_btReturn->addTouchEventListener(CC_CALLBACK_2(CDeskScene::onReturn, this));
+	this->addChild(_btReturn);
 
+	Sprite* score = Sprite::create();
+	score->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("score"));
+	score->setPosition(Vec2(score->getContentSize().width / 2, visibleSize.height - score->getContentSize().height / 2));
+	this->addChild(score);
+
+	//加载四个人的信息
+
+
+	for (int i = 0; i < 54; i++){
+		auto cardSprite = CardSprite::createCardSprite(i);
+		cardSprite->setPosition(Vec2(visibleSize.width / 2 - 53 * DEF_cardsep / 2 + i * DEF_cardsep + cardSprite->getContentSize().width/4, 
+			cardSprite->getContentSize().height / 2 + 45));
+		cardSprite->setTag(i);
+		this->addChild(cardSprite, 1, cardSprite->getTag());
+		_lstCards.push_back(cardSprite);
+	}
+
+	this->scheduleUpdate();
+	__NotificationCenter::getInstance()->addObserver(this, CC_CALLFUNCO_SELECTOR(CDeskScene::ObserverPlaying), "desk", nullptr);
     return true;
 }
 
@@ -58,6 +83,10 @@ void CDeskScene::onPut(Ref *pSender, ui::Widget::TouchEventType type)
 
 void CDeskScene::update(float dt)
 {
-	//__NotificationCenter::getInstance()->
+}
+
+void CDeskScene::ObserverPlaying(Ref* sendmsg)
+{
+	__String* p = (__String*)sendmsg;
 }
 

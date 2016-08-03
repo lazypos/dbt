@@ -53,6 +53,15 @@ bool CHallScene::init()
 	_editDesk->setInputMode(ui::EditBox::InputMode::NUMERIC);
 	this->addChild(_editDesk,2);
 
+	Sprite *userMsg = Sprite::create();
+	userMsg->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("nickname"));
+	userMsg->setPosition(Vec2(visibleSize.width / 2- userMsg->getContentSize().width/2, visibleSize.height - userMsg->getContentSize().height/2));
+	this->addChild(userMsg);
+	Sprite *winMsg = Sprite::create();
+	winMsg->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("win"));
+	winMsg->setPosition(Vec2(visibleSize.width / 2+ winMsg->getContentSize().width / 2, visibleSize.height - winMsg->getContentSize().height/2));
+	this->addChild(winMsg);
+
 	//×¢²á¹Û²ìÕß
 	__NotificationCenter::getInstance()->addObserver(this, CC_CALLFUNCO_SELECTOR(CHallScene::ObserverAddDesk), "hall", nullptr);
 
@@ -88,6 +97,10 @@ void CHallScene::OnFastAddDesk(Ref *pSender, ui::Widget::TouchEventType type)
 		//·¢ËÍ
 		if (messageQueue::instance()->sendMessage("cmd=desk;type=add"))
 			bsend = true;
+#ifdef _DEBUG
+		Scene *scene = CDeskScene::createScene();
+		Director::getInstance()->replaceScene(scene);
+#endif
 	}
 }
 

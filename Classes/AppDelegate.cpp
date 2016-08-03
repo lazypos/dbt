@@ -3,6 +3,7 @@
 #include "LoginScene.h"
 #include "ResourceManager.h"
 #include "MessageQueue.h"
+#include "DeskScene.h"
 
 USING_NS_CC;
 
@@ -84,7 +85,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 		//return false;
 	}
 	resourceMgr::instance()->loadResource();
-	auto scene = CLoginScene::createScene();
+	auto scene = CDeskScene::createScene();
     // run
     director->runWithScene(scene);
 

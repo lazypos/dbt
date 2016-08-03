@@ -140,6 +140,10 @@ void CLoginScene::onLoginTouch(Ref *pSender, ui::Widget::TouchEventType type)
 		os << "cmd=login;type=login;user=" << user
 			<< ";pass=" << password;
 		messageQueue::instance()->sendMessage(os.str());
+#ifdef _DEBUG
+		Scene *hall = CHallScene::createScene();
+		Director::getInstance()->replaceScene(hall);
+#endif
 	}
 }
 

@@ -83,6 +83,19 @@ void CResourceManager::loadLoginResource()
 	//hall
 	login = SpriteFrame::create("add_desk_bg.png", Rect(0, 0, 323, 60));
 	SpriteFrameCache::getInstance()->addSpriteFrame(login, "add_desk_bg");	
+
+#define		sucai_weight 201
+#define		sucai_height 36
+	login = SpriteFrame::create("sucai.png", Rect(0, 0, sucai_height, sucai_height));
+	SpriteFrameCache::getInstance()->addSpriteFrame(login, "return");
+	login = SpriteFrame::create("sucai.png", Rect(0, 1+sucai_height, sucai_weight, sucai_height));
+	SpriteFrameCache::getInstance()->addSpriteFrame(login, "score");
+	login = SpriteFrame::create("sucai.png", Rect(0, 2+2* sucai_height, sucai_weight, sucai_height));
+	SpriteFrameCache::getInstance()->addSpriteFrame(login, "nickname");
+	login = SpriteFrame::create("sucai.png", Rect(0, 3+3 * sucai_height, sucai_weight, sucai_height));
+	SpriteFrameCache::getInstance()->addSpriteFrame(login, "win");
+	login = SpriteFrame::create("sucai.png", Rect(0, 4+4 * sucai_height, sucai_weight, sucai_height));
+	SpriteFrameCache::getInstance()->addSpriteFrame(login, "surplus");
 }
 
 void CResourceManager::loadDeskResource()
