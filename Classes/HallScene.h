@@ -22,12 +22,19 @@ public:
 	void editBoxReturn(ui::EditBox* editBox) {};
 	void ObserverAddDesk(Ref* sendmsg);
 
+	void update(float delta);
 private:
 	ui::EditBox *_editDesk;
 	ui::Button* btCreadAdd;
 	ui::Button* btFastAdd;
 	ui::Button* btFindAdd;
 	bool		bsend = false;
+	bool		changeScene = false;
+
+	LabelTTF* _nickName;
+	LabelTTF* _score;
+	LabelTTF* _total;
+	LabelTTF* _win;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

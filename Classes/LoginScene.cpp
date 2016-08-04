@@ -112,7 +112,8 @@ bool CLoginScene::init()
 	_editRegRepeatPass->setInputFlag(ui::EditBox::InputFlag::PASSWORD);
 	_editRegRepeatPass->setInputMode(ui::EditBox::InputMode::SINGLE_LINE);
 	this->addChild(_editRegRepeatPass);
-
+	
+	this->scheduleUpdate();
 	//注册观察者
 	__NotificationCenter::getInstance()->addObserver(this, CC_CALLFUNCO_SELECTOR(CLoginScene::ObserverLoginRegiste), "logn", nullptr);
     return true;
@@ -141,8 +142,8 @@ void CLoginScene::onLoginTouch(Ref *pSender, ui::Widget::TouchEventType type)
 			<< ";pass=" << password;
 		messageQueue::instance()->sendMessage(os.str());
 #ifdef _DEBUG
-		Scene *hall = CHallScene::createScene();
-		Director::getInstance()->replaceScene(hall);
+// 		Scene *hall = CHallScene::createScene();
+// 		Director::getInstance()->replaceScene(hall);
 #endif
 	}
 }
@@ -187,13 +188,34 @@ void CLoginScene::ObserverLoginRegiste(Ref* sendmsg)
 {
 	__String* p = (__String*)sendmsg;
 	//解析字符串
-	if (true){
-		//登陆成功，取消观察，场景切换
-		__NotificationCenter::getInstance()->removeObserver(this, "logn");
-		Scene *hall = CHallScene::createScene();
-		Director::getInstance()->replaceScene(hall);
+	map<string, string> mapRst;
+	stringToMap(p->_string, mapRst, ";");
+	//登陆
+	if (mapRst["type"] == "login"){
+		if (mapRst["result"] == "ok") {
+			//登陆成功，取消观察，场景切换(不能直接在此处切换)
+			__NotificationCenter::getInstance()->removeObserver(this, "logn");
+			replaceScene = true;
+		}
+		else
+			MessageBox("用户名不存在或者密码错误！\r\n如果没有账号，请在右侧注册新账号。", "提醒");
+	}
+	//注册
+	if (mapRst["type"] == "regist"){
+		if (mapRst["result"] == "ok") {
+			MessageBox("注册成功，请在左侧登陆游戏！", "提醒");
+		}
+		else
+			MessageBox(mapRst["result"].c_str(), "提醒");
 	}
 	bSend = false;
 }
 
+void CLoginScene::update(float dt)
+{
+	if (replaceScene){
+		Scene *hall = CHallScene::createScene();
+		Director::getInstance()->replaceScene(hall);
+	}
+}
 

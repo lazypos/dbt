@@ -1,6 +1,7 @@
 #ifndef _CCommonFunction_h_
 #define _CCommonFunction_h_
 #include <string>
+#include <map>
 using namespace std;
 
 #define  MOD 18
@@ -36,5 +37,8 @@ int inline decrypt_v2(const unsigned char *src, unsigned char *dec, int len)
 bool checkUserIegal(const string& name);
 bool checkPassIegal(const string& pass);
 bool checkNickIegal(const string& name);
+
+
+void stringToMap(const string& src, map<string, string>& m, const string& sep/*="\r\n"*/);
 #endif
 

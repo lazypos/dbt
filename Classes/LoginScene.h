@@ -21,7 +21,7 @@ protected:
 	void editBoxReturn(ui::EditBox* editBox) {};
 
 	void ObserverLoginRegiste(Ref* sendmsg);
-
+	void update(float dt);
 private:
 	ui::EditBox *_editLoginName;
 	ui::EditBox *_editLoginPassword;
@@ -34,6 +34,7 @@ private:
 	ui::Button* btreg;
 
 	bool	bSend = false;
+	bool	replaceScene = false;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

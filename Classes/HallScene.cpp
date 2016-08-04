@@ -5,6 +5,7 @@
 #include "ui/UIButton.h"
 #include "DeskScene.h"
 #include "MessageQueue.h"
+#include "CommonFunction.h"
 
 USING_NS_CC;
 
@@ -62,9 +63,12 @@ bool CHallScene::init()
 	winMsg->setPosition(Vec2(visibleSize.width / 2+ winMsg->getContentSize().width / 2, visibleSize.height - winMsg->getContentSize().height/2));
 	this->addChild(winMsg);
 
+	//信息
+	//_nickName = LabelTTF::create();
+
 	//注册观察者
 	__NotificationCenter::getInstance()->addObserver(this, CC_CALLFUNCO_SELECTOR(CHallScene::ObserverAddDesk), "hall", nullptr);
-
+	messageQueue::instance()->sendMessage("cmd=hall;type=getmsg");
     return true;
 }
 
@@ -107,18 +111,32 @@ void CHallScene::OnFastAddDesk(Ref *pSender, ui::Widget::TouchEventType type)
 void CHallScene::ObserverAddDesk(Ref* sendmsg)
 {
 	__String* p = (__String*)sendmsg;
-	if (p->_string == "ok") {
-		//加入桌子成功，取消观察，场景切换
-		__NotificationCenter::getInstance()->removeObserver(this, "hall");
+	map<string, string> mapRst;
+	stringToMap(p->_string, mapRst, ";");
+	if (mapRst["type"] == "getmsg") {
+		//设置信息
+	}
+	if (mapRst["type"] == "adddesk") {
+		if (mapRst["result"] == "ok") {
+			//加入桌子成功，取消观察，场景切换
+			__NotificationCenter::getInstance()->removeObserver(this, "hall");
+			changeScene = true;
+			return;
+		}
+		bsend = false;
+		if (mapRst["result"] == "full") {
+			MessageBox("该桌号已满, 加入其它桌号。", "提示");
+			return;
+		}
+		MessageBox("该桌号不存在, 加入其它桌号。", "提示");
+		return;
+	}
+}
+
+void CHallScene::update(float delta)
+{
+	if (changeScene){
 		Scene *scene = CDeskScene::createScene();
 		Director::getInstance()->replaceScene(scene);
-		return;
 	}
-	bsend = false;
-	if (p->_string == "full") {
-		MessageBox("该桌号已满, 加入其它桌号。", "提示");
-		return;
-	}
-	MessageBox("该桌号不存在, 加入其它桌号。", "提示");
-	return;
 }

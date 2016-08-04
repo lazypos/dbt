@@ -49,7 +49,7 @@ bool CMessageQueue::recvMessage(string& text)
 {
 	size_t len = 0;
 	int n = recv(_sock, (char*)&len, 4, 0);
-	if (n != 2 || len < 0) {
+	if (n != 4 || len < 0) {
 		MessageBox("从服务器接收数据错误.", "error");
 		return false;
 	}
