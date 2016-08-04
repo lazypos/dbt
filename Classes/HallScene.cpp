@@ -64,8 +64,32 @@ bool CHallScene::init()
 	this->addChild(winMsg);
 
 	//信息
-	//_nickName = LabelTTF::create();
-
+	_nickName = Label::createWithTTF("player", "fonts/arial.ttf", 15);
+	_nickName->setColor(Color3B::BLACK);
+	_nickName->setAnchorPoint(Vec2(0, _nickName->getAnchorPoint().y));
+	_nickName->setPosition(Vec2(visibleSize.width / 2 - 157, 
+		visibleSize.height - userMsg->getContentSize().height/2));
+	this->addChild(_nickName, 2);
+	_score = Label::createWithTTF("10000", "fonts/arial.ttf", 15);
+	_score->setColor(Color3B::BLACK);
+	_score->setAnchorPoint(Vec2(0, _score->getAnchorPoint().y));
+	_score->setPosition(Vec2(visibleSize.width / 2 - 56,
+		visibleSize.height - userMsg->getContentSize().height / 2));
+	this->addChild(_score, 2);
+	_total = Label::createWithTTF("100", "fonts/arial.ttf", 15);
+	_total->setColor(Color3B::BLACK);
+	_total->setAnchorPoint(Vec2(0, _total->getAnchorPoint().y));
+	_total->setPosition(Vec2(visibleSize.width / 2 + 50,
+		visibleSize.height - userMsg->getContentSize().height / 2));
+	this->addChild(_total, 2);
+	_win = Label::createWithTTF("100%", "fonts/arial.ttf", 15);
+	_win->setColor(Color3B::BLACK);
+	_win->setAnchorPoint(Vec2(0, _win->getAnchorPoint().y));
+	_win->setPosition(Vec2(visibleSize.width / 2 + 150,
+		visibleSize.height - userMsg->getContentSize().height / 2));
+	this->addChild(_win, 2);
+	
+	this->scheduleUpdate();
 	//注册观察者
 	__NotificationCenter::getInstance()->addObserver(this, CC_CALLFUNCO_SELECTOR(CHallScene::ObserverAddDesk), "hall", nullptr);
 	messageQueue::instance()->sendMessage("cmd=hall;type=getmsg");
@@ -81,7 +105,7 @@ void CHallScene::OnFindDesk(Ref *pSender, ui::Widget::TouchEventType type)
 			return;
 		}
 		//发送
-		if (messageQueue::instance()->sendMessage("cmd=desk;type=find;num="+deskNum))
+		if (messageQueue::instance()->sendMessage("cmd=hall;type=find;num="+deskNum))
 			bsend = true;
 	}
 }
@@ -90,7 +114,7 @@ void CHallScene::OnCreateDesk(Ref *pSender, ui::Widget::TouchEventType type)
 {
 	if (type == ui::Widget::TouchEventType::ENDED && !bsend) {
 		//发送
-		if (messageQueue::instance()->sendMessage("cmd=desk;type=create"))
+		if (messageQueue::instance()->sendMessage("cmd=hall;type=create"))
 			bsend = true;
 	}
 }
@@ -99,7 +123,7 @@ void CHallScene::OnFastAddDesk(Ref *pSender, ui::Widget::TouchEventType type)
 {
 	if (type == ui::Widget::TouchEventType::ENDED && !bsend) {
 		//发送
-		if (messageQueue::instance()->sendMessage("cmd=desk;type=add"))
+		if (messageQueue::instance()->sendMessage("cmd=hall;type=add"))
 			bsend = true;
 #ifdef _DEBUG
 		Scene *scene = CDeskScene::createScene();
@@ -115,6 +139,10 @@ void CHallScene::ObserverAddDesk(Ref* sendmsg)
 	stringToMap(p->_string, mapRst, ";");
 	if (mapRst["type"] == "getmsg") {
 		//设置信息
+		_nickName->setString(mapRst["user"]);
+		_score->setString(mapRst["score"]);
+		_total->setString(mapRst["total"]);
+		_win->setString(mapRst["win"]);
 	}
 	if (mapRst["type"] == "adddesk") {
 		if (mapRst["result"] == "ok") {

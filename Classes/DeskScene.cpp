@@ -48,17 +48,17 @@ bool CDeskScene::init()
 	this->addChild(winInfo0,2);
 	//³öÅÆ°´Å¥
 	_btPut = ui::Button::create("put.png", "put_press.png", "put_press.png");
-	_btPut->setPosition(Vec2(visibleSize.width / 2 - 100, 150));
+	_btPut->setPosition(Vec2(visibleSize.width / 2 - 100, 145));
 	_btPut->addTouchEventListener(CC_CALLBACK_2(CDeskScene::onPut, this));
 	_btPut->setScale(float(0.8));
 	this->addChild(_btPut,2);
 	_btNoput = ui::Button::create("noput.png", "noput_press.png", "noput_press.png");
-	_btNoput->setPosition(Vec2(visibleSize.width / 2 + 100, 150));
+	_btNoput->setPosition(Vec2(visibleSize.width / 2 + 100, 145));
 	_btNoput->addTouchEventListener(CC_CALLBACK_2(CDeskScene::onNoput, this));
 	_btNoput->setScale(float(0.8));
 	this->addChild(_btNoput,2);
 	_btReady = ui::Button::create("ready.png", "ready_press.png", "ready_press.png");
-	_btReady->setPosition(Vec2(visibleSize.width / 2, 150));
+	_btReady->setPosition(Vec2(visibleSize.width / 2, 145));
 	_btReady->addTouchEventListener(CC_CALLBACK_2(CDeskScene::onReady, this));
 	_btReady->setScale(float(0.8));
 	this->addChild(_btReady, 2);

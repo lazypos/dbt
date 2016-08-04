@@ -52,8 +52,8 @@ int main()
 		recv(cli, buf, 1024, 0);
 		map<string, string> mmm;
 		stringToMap(buf, mmm, ";");
-		//µÇÂ½³¡¾°
 		string rst;
+		//µÇÂ½³¡¾°
 		if (mmm["cmd"] == "login")
 		{
 			if (mmm["type"] == "login")//µÇÂ½
@@ -75,6 +75,31 @@ int main()
 			if (mmm["type"] == "regist")//×¢²á
 			{
 				rst = "logntype=regist;result=ÓÃ»§ÃûÒÑ´æÔÚ£¡";
+				int len = rst.length();
+				send(cli, (char*)&len, 4, 0);
+				send(cli, rst.c_str(), rst.length(), 0);
+			}
+		}
+		//´óÌü
+		if (mmm["cmd"] == "hall")
+		{
+			if (mmm["type"] == "getmsg")//µÇÂ½
+			{
+				rst = "halltype=getmsg;nick=dagouge;score=123123;total=123;win=12.3%";
+				int len = rst.length();
+				send(cli, (char*)&len, 4, 0);
+				send(cli, rst.c_str(), rst.length(), 0);
+			}
+			if (mmm["type"] == "find")
+			{
+				rst = "halltype=adddesk;result=-1";
+				int len = rst.length();
+				send(cli, (char*)&len, 4, 0);
+				send(cli, rst.c_str(), rst.length(), 0);
+			}
+			if (mmm["type"] == "add" || mmm["type"] == "create")
+			{
+				rst = "halltype=adddesk;result=ok";
 				int len = rst.length();
 				send(cli, (char*)&len, 4, 0);
 				send(cli, rst.c_str(), rst.length(), 0);

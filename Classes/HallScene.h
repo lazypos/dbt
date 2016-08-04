@@ -31,10 +31,10 @@ private:
 	bool		bsend = false;
 	bool		changeScene = false;
 
-	LabelTTF* _nickName;
-	LabelTTF* _score;
-	LabelTTF* _total;
-	LabelTTF* _win;
+	Label* _nickName;
+	Label* _score;
+	Label* _total;
+	Label* _win;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

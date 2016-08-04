@@ -4,6 +4,7 @@
 #include "ResourceManager.h"
 #include "MessageQueue.h"
 #include "DeskScene.h"
+#include "HallScene.h"
 
 USING_NS_CC;
 
@@ -82,10 +83,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
     //auto scene = HelloWorld::createScene();
 	if (!messageQueue::instance()->start()){
 		MessageBox("连接服务器失败！请检查网络是否正常。","错误");
-		return false;
+		//return false;
 	}
 	resourceMgr::instance()->loadResource();
-	auto scene = CLoginScene::createScene();
+	auto scene = CHallScene::createScene();
     // run
     director->runWithScene(scene);
 
