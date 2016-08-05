@@ -108,5 +108,7 @@ void CResourceManager::loadDeskResource()
 	SpriteFrameCache::getInstance()->addSpriteFrame(button, "noputbtn");
 	button = SpriteFrame::create("poker_play_card.png", Rect(button_weight, 0, button_weight, button_height));
 	SpriteFrameCache::getInstance()->addSpriteFrame(button, "putbtn");
+	button = SpriteFrame::create("zhunbei.png", Rect(0, 0, 70, 35));
+	SpriteFrameCache::getInstance()->addSpriteFrame(button, "zhunbei");
 
 }

@@ -111,40 +111,47 @@ int main()
 			if (mmm["type"] == "getmsg")//获取信息
 			{	//player=id<>nick<>score<>tatol<>win<>ready|。。
 				//当时的信息 0,1,3
-				rst = "desktype=getmsg;desknum=78;id=1;player=0<>cbs<>2300<>12<>80%<>1|3<>cjl<>1200<>324<>30%<>0";
+				rst = "desktype=getmsg;desknum=78;id=1;player=0<>cbs<>2300<>12<>80%<>1|1<>1dsa<>111<>123<>60%<>0|3<>cjl<>1200<>324<>30%<>0";
 				int len = rst.length();
 				send(cli, (char*)&len, 4, 0);
 				send(cli, rst.c_str(), rst.length(), 0);
+				Sleep(2000);
 				//3准备
 				rst = "desktype=play;state=ready;id=3";
 				len = rst.length();
 				send(cli, (char*)&len, 4, 0);
 				send(cli, rst.c_str(), rst.length(), 0);
+				Sleep(2000);
 				//2加入
 				rst = "desktype=play;state=add;player=2<>cdad<>120<>3222<>22%<>0";
 				len = rst.length();
 				send(cli, (char*)&len, 4, 0);
 				send(cli, rst.c_str(), rst.length(), 0);
+				Sleep(2000);
 				//3离开
 				rst = "desktype=play;state=leave;id=3";
 				len = rst.length();
 				send(cli, (char*)&len, 4, 0);
 				send(cli, rst.c_str(), rst.length(), 0);
+				Sleep(2000);
 				//2准备
 				rst = "desktype=play;state=ready;id=2";
 				len = rst.length();
 				send(cli, (char*)&len, 4, 0);
 				send(cli, rst.c_str(), rst.length(), 0);
+				Sleep(2000);
 				//3加入
 				rst = "desktype=play;state=add;player=3<>cbd<>120<>3222<>20%<>0";
 				len = rst.length();
 				send(cli, (char*)&len, 4, 0);
 				send(cli, rst.c_str(), rst.length(), 0);
+				Sleep(2000);
 				//3准备
 				rst = "desktype=play;state=ready;id=3";
 				len = rst.length();
 				send(cli, (char*)&len, 4, 0);
 				send(cli, rst.c_str(), rst.length(), 0);
+				Sleep(2000);
 			}
 		}
 	}
