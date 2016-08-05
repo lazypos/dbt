@@ -86,7 +86,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 		//return false;
 	}
 	resourceMgr::instance()->loadResource();
-	auto scene = CHallScene::createScene();
+	auto scene = CDeskScene::createScene();
     // run
     director->runWithScene(scene);
 

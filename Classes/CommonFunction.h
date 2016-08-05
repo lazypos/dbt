@@ -2,6 +2,8 @@
 #define _CCommonFunction_h_
 #include <string>
 #include <map>
+#include <list>
+#include <vector>
 using namespace std;
 
 #define  MOD 18
@@ -40,5 +42,7 @@ bool checkNickIegal(const string& name);
 
 
 void stringToMap(const string& src, map<string, string>& m, const string& sep/*="\r\n"*/);
+void stringToList(const string& src, list<string>& lst, const string& sep /*= "\r\n"*/);
+void stringToVector(const string& src, vector<string>& lst, const string& sep /*= "\r\n"*/);
 #endif
 

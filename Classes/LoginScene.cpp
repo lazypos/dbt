@@ -160,7 +160,7 @@ void CLoginScene::onRegistTouch(Ref *pSender, ui::Widget::TouchEventType type)
 			return;
 		}
 		if (!checkNickIegal(nick)) {
-			MessageBox("昵称只能用不能用特殊字符,长度在5-10个字符之间！", "提示");
+			MessageBox("昵称只能用不能用特殊字符,暂不支持中文,长度在5-10个字符之间！", "提示");
 			return;
 		}
 		if (!checkPassIegal(password)) {

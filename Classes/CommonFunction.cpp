@@ -35,6 +35,9 @@ bool checkNickIegal(const string& name)
 		|| name.find("&") != string::npos
 		|| name.find("!") != string::npos
 		|| name.find("/") != string::npos
+		|| name.find("<") != string::npos
+		|| name.find(">") != string::npos
+		|| name.find("|") != string::npos
 		|| name.find("\\") != string::npos)
 		return false;
 	return true;
@@ -63,4 +66,42 @@ void stringToMap(const string& src, map<string, string>& m, const string& sep/*=
 		if (eq)
 			m.emplace(string(psrc, eq), string(eq + 1));
 	}
+}
+
+void stringToList(const string& src, list<string>& lst, const string& sep /*= "\r\n"*/)
+{
+	lst.clear();
+	char *psrc = (char*)src.c_str();
+	char *pend = (char*)src.c_str() + src.length();
+	char* sp = (char*)sep.c_str();
+	size_t len = sep.length();
+
+	char* pitem = strstr(psrc, sp);
+	while (pitem != NULL) {
+		if (pitem > psrc)
+			lst.emplace_back(string(psrc, pitem));
+		psrc = pitem + len;
+		pitem = strstr(psrc, sp);
+	}
+	if (psrc != NULL && psrc != pend)
+		lst.emplace_back(string(psrc));
+}
+
+void stringToVector(const string& src, vector<string>& lst, const string& sep /*= "\r\n"*/)
+{
+	lst.clear();
+	char *psrc = (char*)src.c_str();
+	char *pend = (char*)src.c_str() + src.length();
+	char* sp = (char*)sep.c_str();
+	size_t len = sep.length();
+
+	char* pitem = strstr(psrc, sp);
+	while (pitem != NULL) {
+		if (pitem > psrc)
+			lst.emplace_back(string(psrc, pitem));
+		psrc = pitem + len;
+		pitem = strstr(psrc, sp);
+	}
+	if (psrc != NULL && psrc != pend)
+		lst.emplace_back(string(psrc));
 }

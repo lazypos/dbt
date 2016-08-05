@@ -6,6 +6,7 @@
 #include "HallScene.h"
 #include "MessageQueue.h"
 #include "DBTRule.h"
+#include "CommonFunction.h"
 
 USING_NS_CC;
 
@@ -26,7 +27,7 @@ bool CDeskScene::init()
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 
-	_btReturn = ui::Button::create("add_desk.png", "add_desk_press.png", "add_desk_press.png");
+	_btReturn = ui::Button::create("return.png", "return_press.png", "return_press.png");
 	_btReturn->setPosition(Vec2(visibleSize.width - _btReturn->getContentSize().width / 2, 
 		visibleSize.height - _btReturn->getContentSize().height / 2));
 	_btReturn->addTouchEventListener(CC_CALLBACK_2(CDeskScene::onReturn, this));
@@ -51,16 +52,19 @@ bool CDeskScene::init()
 	_btPut->setPosition(Vec2(visibleSize.width / 2 - 100, 145));
 	_btPut->addTouchEventListener(CC_CALLBACK_2(CDeskScene::onPut, this));
 	_btPut->setScale(float(0.8));
+	_btPut->setVisible(false);
 	this->addChild(_btPut,2);
 	_btNoput = ui::Button::create("noput.png", "noput_press.png", "noput_press.png");
 	_btNoput->setPosition(Vec2(visibleSize.width / 2 + 100, 145));
 	_btNoput->addTouchEventListener(CC_CALLBACK_2(CDeskScene::onNoput, this));
 	_btNoput->setScale(float(0.8));
+	_btNoput->setVisible(false);
 	this->addChild(_btNoput,2);
 	_btReady = ui::Button::create("ready.png", "ready_press.png", "ready_press.png");
 	_btReady->setPosition(Vec2(visibleSize.width / 2, 145));
 	_btReady->addTouchEventListener(CC_CALLBACK_2(CDeskScene::onReady, this));
 	_btReady->setScale(float(0.8));
+	_btReady->setVisible(false);
 	this->addChild(_btReady, 2);
 
 	Sprite* userInfo1 = Sprite::create();
@@ -111,17 +115,78 @@ bool CDeskScene::init()
 		visibleSize.height - surplus3->getContentSize().height*1.5));
 	this->addChild(surplus3);
 
-	for (int i = 0; i < 54; i++){
-		auto cardSprite = CardSprite::createCardSprite(i);
-		cardSprite->setPosition(Vec2(visibleSize.width / 2 - 53 * DEF_cardsep / 2 + i * DEF_cardsep + cardSprite->getContentSize().width/4, 
-			cardSprite->getContentSize().height / 3));
-		cardSprite->setTag(i);
-		this->addChild(cardSprite, 1, cardSprite->getTag());
-		_lstCards.push_back(cardSprite);
-	}
+	//桌号
+	_labelDeskNum = Label::createWithTTF("0", "fonts/arial.ttf", 20);
+	_labelDeskNum->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	this->addChild(_labelDeskNum);
+	_labelWeScore = Label::createWithTTF("0", "fonts/arial.ttf", 25);
+	_labelWeScore->setPosition(Vec2(60, visibleSize.height - score->getContentSize().height / 2));
+	_labelWeScore->setColor(Color3B::BLACK);
+	this->addChild(_labelWeScore);
+	_labelTheyScore = Label::createWithTTF("0", "fonts/arial.ttf", 25);
+	_labelTheyScore->setPosition(Vec2(160, visibleSize.height - score->getContentSize().height / 2));
+	_labelTheyScore->setColor(Color3B::BLACK);
+	this->addChild(_labelTheyScore);
+
+	//四个人->自己
+	playerPtr ptr = make_shared<st_player_info>();
+	ptr->_nickName = Label::createWithTTF("player", "fonts/arial.ttf", 15);
+	ptr->_nickName->setPosition(Vec2(visibleSize.width / 2 - 135,
+		userInfo0->getContentSize().height / 2));
+	ptr->_nickName->setColor(Color3B::BLACK);
+	this->addChild(ptr->_nickName,3);
+	ptr->_score = Label::createWithTTF("123", "fonts/arial.ttf", 15);
+	ptr->_score->setPosition(Vec2(visibleSize.width / 2 - 40,
+		userInfo0->getContentSize().height / 2));
+	ptr->_score->setColor(Color3B::BLACK);
+	this->addChild(ptr->_score,3);
+	ptr->_total = Label::createWithTTF("123", "fonts/arial.ttf", 15);
+	ptr->_total->setPosition(Vec2(visibleSize.width / 2 + 60,
+		userInfo0->getContentSize().height / 2));
+	ptr->_total->setColor(Color3B::BLACK);
+	this->addChild(ptr->_total,3);
+	ptr->_win = Label::createWithTTF("12%", "fonts/arial.ttf", 15);
+	ptr->_win->setPosition(Vec2(visibleSize.width / 2 + 165,
+		userInfo0->getContentSize().height / 2));
+	ptr->_win->setColor(Color3B::BLACK);
+	this->addChild(ptr->_win, 3);
+	ptr->_surplus = Label::createWithTTF("12%", "fonts/arial.ttf", 15);
+	ptr->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
+	ptr->_time->setPosition(Vec2(visibleSize.width / 2 + 300, 200));
+	this->addChild(ptr->_time);
+	_vecPlayers.push_back(ptr);
+	//->下家
+	ptr = make_shared<st_player_info>();
+	ptr->_nickName = Label::createWithTTF("player", "fonts/arial.ttf", 15);
+	ptr->_nickName->setPosition(Vec2(visibleSize.width - 135,
+		userInfo1->getPosition().y));
+	ptr->_nickName->setColor(Color3B::BLACK);
+	this->addChild(ptr->_nickName);
+	ptr->_score = Label::createWithTTF("123", "fonts/arial.ttf", 15);
+	ptr->_score->setPosition(Vec2(visibleSize.width - 40,
+		userInfo1->getPosition().y));
+	ptr->_score->setColor(Color3B::BLACK);
+	this->addChild(ptr->_score);
+	ptr->_total = Label::createWithTTF("123", "fonts/arial.ttf", 15);
+	ptr->_total->setPosition(Vec2(visibleSize.width - 135,
+		winInfo1->getPosition().y));
+	ptr->_total->setColor(Color3B::BLACK);
+	this->addChild(ptr->_total);
+	ptr->_win = Label::createWithTTF("12%", "fonts/arial.ttf", 15);
+	ptr->_win->setPosition(Vec2(visibleSize.width - 40,
+		winInfo1->getPosition().y));
+	ptr->_win->setColor(Color3B::BLACK);
+	this->addChild(ptr->_win);
+	ptr->_surplus = Label::createWithTTF("54", "fonts/arial.ttf", 15);
+	ptr->_surplus->setPosition(Vec2(visibleSize.width - 135,
+		surplus1->getPosition().y));
+	ptr->_surplus->setColor(Color3B::BLACK);
+	this->addChild(ptr->_surplus);
+	_vecPlayers.push_back(ptr);
 
 	this->scheduleUpdate();
 	__NotificationCenter::getInstance()->addObserver(this, CC_CALLFUNCO_SELECTOR(CDeskScene::ObserverPlaying), "desk", nullptr);
+	messageQueue::instance()->sendMessage("cmd=desk;type=getmsg");
     return true;
 }
 
@@ -186,6 +251,73 @@ void CDeskScene::update(float dt)
 void CDeskScene::ObserverPlaying(Ref* sendmsg)
 {
 	__String* p = (__String*)sendmsg;
+	map<string, string> mapRst;
+	stringToMap(p->_string, mapRst, ";");
+	//获取信息
+	if (mapRst["type"] == "getmsg"){
+		auto it = mapRst.find("desknum");//桌号
+		if (it != mapRst.end())
+			_labelDeskNum->setString(it->second);
+		it = mapRst.find("id");
+		if (it != mapRst.end())//自己的座位号
+			_seatNum = atoi(it->second.c_str());
+		string players = mapRst["player"];
+		//当前桌子上的人员信息（包括自己）
+		if (players.length() > 0){
+			list<string> tmp;
+			stringToList(players, tmp, "|");
+			for (const auto& it : tmp)
+				playerAdd(it);
+		}
+	}
+	//游戏
+	if (mapRst["type"] == "play"){
+		playerPtr ptr = _mapPlayers[atoi(mapRst["id"].c_str())];
+		//准备
+		if (mapRst["state"] == "ready"){
+		}
+		//游戏开始
+		else if (mapRst["state"] == "start") {
+			vector<string> vecCards;
+			stringToVector(mapRst["cards"], vecCards, ",");
+			sort(vecCards.begin(), vecCards.end());
+			auto visibleSize = Director::getInstance()->getVisibleSize();
+			for (int i = 0; i < 54; i++) {
+				auto cardSprite = CardSprite::createCardSprite(atoi(vecCards[i].c_str()));
+				cardSprite->setPosition(Vec2(visibleSize.width / 2 - 53 * DEF_cardsep / 2 + i * DEF_cardsep + cardSprite->getContentSize().width / 4,
+					cardSprite->getContentSize().height / 3));
+				cardSprite->setTag(i);
+				this->addChild(cardSprite, 1, cardSprite->getTag());
+				_lstCards.push_back(cardSprite);
+			}
+		}
+		//玩家离开
+		else if (mapRst["state"] == "leave") {
+			playerLeave(ptr);
+		}
+		//玩家加入
+		else if (mapRst["state"] == "add"){
+			playerAdd(mapRst["player"]);
+		}
+		//玩家出牌/不出
+		else if (mapRst["state"] == "put"){
+			string cards = mapRst["cards"];
+			if (cards.empty()) {
+
+			}
+			else {
+				
+			}
+		}
+		//玩家得分
+		else if (mapRst["state"] == "score"){
+			
+		}
+		//游戏结束
+		else if (mapRst["state"] == "over"){
+
+		}
+	}
 }
 
 std::vector<int> CDeskScene::getSelectCardList()
@@ -199,3 +331,25 @@ std::vector<int> CDeskScene::getSelectCardList()
 	return vec;
 }
 
+void CDeskScene::playerLeave(playerPtr ptr)
+{
+	ptr->_nickName->setString("");
+	ptr->_score->setString("");
+	ptr->_total->setString("");
+	ptr->_win->setString("");
+}
+
+void CDeskScene::playerAdd(const string& content)
+{
+	vector<string> vectmp;
+	stringToVector(content, vectmp, "<>");
+	playerPtr ptr = _mapPlayers[atoi(vectmp[0].c_str())];
+	ptr->_nickName->setString(vectmp[1]);
+	ptr->_score->setString(vectmp[2]);
+	ptr->_total->setString(vectmp[3]);
+	ptr->_win->setString(vectmp[4]);
+	if (vectmp[5] == "1")
+		ptr->_ready->setVisible(false);
+	else
+		ptr->_ready->setVisible(true);
+}

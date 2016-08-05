@@ -8,12 +8,17 @@ USING_NS_CC;
 
 typedef struct
 {
-	Vec2 nick;
-	Vec2 win;
-	Vec2 surplus;
+	Label* _nickName;
+	Label* _score;
+	Label* _total;
+	Label* _win;
+	Label* _surplus;
+	Sprite*_ready;
+	LabelAtlas* _time;
 	vector<CardSprite*> perCards;
 
 }st_player_info;
+typedef shared_ptr<st_player_info> playerPtr;
 
 class CDeskScene : public cocos2d::Layer
 {
@@ -32,6 +37,10 @@ public:
 	void update(float dt);
 	void ObserverPlaying(Ref* sendmsg);
 	vector<int>	getSelectCardList();
+
+	void	playerLeave(playerPtr ptr);
+	void	playerAdd(const string& content);
+
 private:
 	ui::Button* _btReturn;
 	ui::Button* _btReady;
@@ -41,10 +50,16 @@ private:
 	bool		_isSatrting = false;
 	bool		_isExit = false;
 
-	vector<CardSprite*>		_lstCards;
-	CardSprite* card_per =	nullptr;
-	vector<st_player_info>	_vecPlayers;
-	vector<int>				_vecPerCards;
+	Label*	_labelDeskNum;
+	Label*	_labelWeScore;
+	Label*	_labelTheyScore;
+
+	vector<CardSprite*>			_lstCards;
+	CardSprite*					_card_select_per =	nullptr;
+	vector<playerPtr>			_vecPlayers; //初始化的时候放在这里，然后根据A的id插入到map里
+	map<int, playerPtr>			_mapPlayers;
+	vector<int>					_vecPerCards;
+	int							_seatNum;
 };
 
 #endif // __HELLOWORLD_SCENE_H__
