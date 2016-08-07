@@ -37,7 +37,7 @@ bool CMessageQueue::sendMessage(const string& str)
 	while (len < str.length()) {
 		int n = send(_sock, str.c_str() + len, str.length() - len, 0);
 		if (n <= 0){
-			MessageBox("与服务器断开连接!","error");
+			MessageBox("断开连接，请重新登录!","error");
 			return false;
 		}
 		len += n;

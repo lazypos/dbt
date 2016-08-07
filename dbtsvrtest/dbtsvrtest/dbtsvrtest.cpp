@@ -108,6 +108,7 @@ int main()
 		//桌子
 		if (mmm["cmd"]=="desk")
 		{
+#define delay_time 1
 			if (mmm["type"] == "getmsg")//获取信息
 			{	//player=id<>nick<>score<>tatol<>win<>ready|。。
 				//当时的信息 0,1,3
@@ -115,39 +116,80 @@ int main()
 				int len = rst.length();
 				send(cli, (char*)&len, 4, 0);
 				send(cli, rst.c_str(), rst.length(), 0);
-				Sleep(2000);
+				Sleep(delay_time);
 				//3准备
 				rst = "desktype=play;state=ready;id=3";
 				len = rst.length();
 				send(cli, (char*)&len, 4, 0);
 				send(cli, rst.c_str(), rst.length(), 0);
-				Sleep(2000);
+				Sleep(delay_time);
 				//2加入
 				rst = "desktype=play;state=add;player=2<>cdad<>120<>3222<>22%<>0";
 				len = rst.length();
 				send(cli, (char*)&len, 4, 0);
 				send(cli, rst.c_str(), rst.length(), 0);
-				Sleep(2000);
+				Sleep(delay_time);
 				//3离开
 				rst = "desktype=play;state=leave;id=3";
 				len = rst.length();
 				send(cli, (char*)&len, 4, 0);
 				send(cli, rst.c_str(), rst.length(), 0);
-				Sleep(2000);
+				Sleep(delay_time);
 				//2准备
 				rst = "desktype=play;state=ready;id=2";
 				len = rst.length();
 				send(cli, (char*)&len, 4, 0);
 				send(cli, rst.c_str(), rst.length(), 0);
-				Sleep(2000);
+				Sleep(delay_time);
 				//3加入
 				rst = "desktype=play;state=add;player=3<>cbd<>120<>3222<>20%<>0";
 				len = rst.length();
 				send(cli, (char*)&len, 4, 0);
 				send(cli, rst.c_str(), rst.length(), 0);
-				Sleep(2000);
+				Sleep(delay_time);
 				//3准备
 				rst = "desktype=play;state=ready;id=3";
+				len = rst.length();
+				send(cli, (char*)&len, 4, 0);
+				send(cli, rst.c_str(), rst.length(), 0);
+				Sleep(5000);
+				//开始
+				rst = "desktype=play;state=start;now=1;cards=1,1,3,4,5,6,12,12,34,34,4,42,42,32,12,23,4,6,7,32,25,23,23,21,23,53,45,45,45,6,32,53,15,32,38,40,29,29,28,39,38";
+				len = rst.length();
+				send(cli, (char*)&len, 4, 0);
+				send(cli, rst.c_str(), rst.length(), 0);
+				Sleep(2000);
+
+				//出牌
+				rst = "desktype=play;state=put;per=1;now=2;cards=23,23,23;surplus=30";
+				len = rst.length();
+				send(cli, (char*)&len, 4, 0);
+				send(cli, rst.c_str(), rst.length(), 0);
+				Sleep(2000);
+				//出牌
+				rst = "desktype=play;state=put;per=2;now=3;cards=23,23,23;surplus=30";
+				len = rst.length();
+				send(cli, (char*)&len, 4, 0);
+				send(cli, rst.c_str(), rst.length(), 0);
+				Sleep(2000);
+				//出牌
+				rst = "desktype=play;state=put;per=3;now=0;cards=;surplus=30;clear=1";
+				len = rst.length();
+				send(cli, (char*)&len, 4, 0);
+				send(cli, rst.c_str(), rst.length(), 0);
+				Sleep(2000);
+				//出牌
+				rst = "desktype=play;state=put;per=0;now=-1;cards=23,23,23;surplus=0;go=1";
+				len = rst.length();
+				send(cli, (char*)&len, 4, 0);
+				send(cli, rst.c_str(), rst.length(), 0);
+				//得分
+				rst = "desktype=play;state=score;0=120;1=230";
+				len = rst.length();
+				send(cli, (char*)&len, 4, 0);
+				send(cli, rst.c_str(), rst.length(), 0);
+				//结束
+				rst = "desktype=play;state=over;n0=dsad;n1=dsad;n2=player3;n3=dsads;s0=20;s1=-20;s2=20;s3=-20";
 				len = rst.length();
 				send(cli, (char*)&len, 4, 0);
 				send(cli, rst.c_str(), rst.length(), 0);

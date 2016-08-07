@@ -236,6 +236,8 @@ std::pair<CDBTRule::cards_type, int> CDBTRule::getType(const std::vector<int>& c
 
 bool CDBTRule::isBigger(const std::vector<int>& cards_per, std::vector<int>& cards_now)
 {
+	if (cards_per.size() == 0)
+		return true;
 	if (!checkCards(cards_now) || cards_now.size() == 0)
 		return false;
 	auto per = getType(cards_per);
