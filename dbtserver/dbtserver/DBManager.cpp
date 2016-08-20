@@ -56,6 +56,7 @@ bool CDBManager::registPlayer(const string& user, const string& pass, const stri
 	if (_dbopt.query(sql, ptr) && ptr->IsEof()){
 		sql = "insert into dbt (username,password,nickname) values('"
 			+ user + "','" + pass + "','" + nick + "')";
+		return _dbopt.execute(sql);
 	}
 	return false;
 }

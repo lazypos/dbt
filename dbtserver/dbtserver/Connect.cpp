@@ -104,12 +104,25 @@ void CConnect::processLogin()
 	else if (type == "regist"){ //注册
 		if (_player) {
 			LERROR << "." << _remoteIp << "->" << username;
-			replay("logntype=login;result=已经登录");
+			replay("logntype=regist;result=已经登录");
 			return;
 		}
 		string  nickname = _mapRecv["nick"];
-		
+		if (nickname.length() < 2 || nickname.length() > 8){
+			LERROR << "." << _remoteIp << "->" << username;
+			replay("logntype=regist;result=信息有误");
+			return;
+		}
+		if (dbmanager::Instance()->registPlayer(username, password, nickname)){
+			LINFO << "注册成功！" << _remoteIp << "->" << username;
+			replay("logntype=regist;result=ok");
+			return;
+		}
+		LERROR << "注册失败！" << _remoteIp << "->" << username;
+		replay("logntype=regist;result=账号已存在.");
+		return;
 	}
+	LERROR << "收到错误的消息." << _remoteIp;
 }
 
 void CConnect::processHall()
