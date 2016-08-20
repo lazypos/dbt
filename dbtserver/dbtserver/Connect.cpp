@@ -89,7 +89,7 @@ void CConnect::processLogin()
 		}
 		playerInfoPtr ptr = dbmanager::Instance()->loadPlayer(username);
 		if (!ptr || ptr->mPass != password){
-			LERROR << "登录失败, 用户不存在或者密码错误." << _remoteIp << "->" << username;
+			LERROR << "login faild, user not exist or pass error." << _remoteIp << "->" << username;
 			replay("logntype=login;result=用户不存在或者密码错误");
 			return;
 		}

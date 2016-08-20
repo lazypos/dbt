@@ -15,7 +15,7 @@ inline void read_cb(struct bufferevent *bev, void *ctx) {
 		bufferevent_read(bev, (void*)strBuf.c_str(), def_header_len);
 		pLen = reinterpret_cast<int*>(const_cast<char*>(strBuf.c_str()));
 		if (rLen < 0){
-			LERROR << "收到错误数据，断开客户端连接。" << conn->getRemoteIP();
+			LERROR << "recv error，break client." << conn->getRemoteIP();
 			conn->closeConnect();
 			return;
 		}

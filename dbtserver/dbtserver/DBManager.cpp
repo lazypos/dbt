@@ -15,8 +15,8 @@ CDBManager::~CDBManager()
 bool CDBManager::start()
 {
 	_dbopt.setConnectParameter("42.96.205.100", "3306", "", "root", "Adabaoge,.");
-	if (_dbopt.execute("use zcw")) {
-		LERROR << "无法使用数据库.";
+	if (!_dbopt.execute("use zcw")) {
+		LERROR << "can't use zcw db.";
 		return false;
 	}
 	_threadInsert = make_shared<thread>(&CDBManager::work, this);
@@ -76,7 +76,7 @@ void CDBManager::work()
 
 		for (const auto &it : lstTmp){
 			if (!_dbopt.execute(it))
-				LERROR << "插入数据库失败:" << it;
+				LERROR << "insert db faild:" << it;
 		}
 		lstTmp.clear();
 		this_thread::yield();
@@ -84,7 +84,7 @@ void CDBManager::work()
 	//退出前
 	for (const auto &it : _lstSql) {
 		if (!_dbopt.execute(it))
-			LERROR << "插入数据库失败:" << it;
+			LERROR << "insert db faild:" << it;
 	}
 	loginSvr::Instance()->stop();
 }

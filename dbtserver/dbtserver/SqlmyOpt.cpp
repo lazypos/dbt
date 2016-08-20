@@ -15,14 +15,14 @@ bool CSqlmyOpt::open()
 	close();
 	_connPtr = mysql_init(nullptr);
 	if (_connPtr == nullptr) {
-		LERROR << "初始化mysql失败.";
+		LERROR << "init mysql faild.";
 		return false;
 	}
 
 	if (!mysql_real_connect(_connPtr, _host.c_str(), _user.c_str(),
 		_pass.c_str(), _name.c_str(), atoi(_port.c_str()),
 		nullptr, CLIENT_MULTI_STATEMENTS)) {
-		LERROR << "连接mysql失败." << _host;
+		LERROR << "connect mysql faild." << _host;
 		return false;
 	}
 	
@@ -46,16 +46,16 @@ bool CSqlmyOpt::query(const std::string& sql, DBResultPtr& ptr)
 	bool success = true;
 	while (!isConnected()) {
 		if (open()) break;
-		LERROR << "重连数据库失败。";
+		LERROR << "reconnect db faild.";
 		std::this_thread::sleep_for(std::chrono::seconds(5));
 	}
 	if (mysql_real_query(_connPtr, sql.c_str(), sql.length())){
 		success = false;
-		LERROR << "执行语句失败:" << sql;
+		LERROR << "query sql error:" << sql;
 		long errcode = 0;
 		getLastError(errcode);
 		if (errcode == 2006){
-			LERROR << "断开连接错误。";
+			LERROR << "db breaked.";
 			close();
 		}
 	}
@@ -72,16 +72,16 @@ bool CSqlmyOpt::execute(const std::string& sql)
 	bool success = true;
 	while (!isConnected()) {
 		if (open()) break;
-		LERROR << "重连数据库失败。";
+		LERROR << "reconnect db faild.";
 		std::this_thread::sleep_for(std::chrono::seconds(5));
 	}
 	if (mysql_real_query(_connPtr, sql.c_str(), sql.length())) {
 		success = false;
-		LERROR << "执行语句失败:" << sql;
+		LERROR << "execute sql faild:" << sql;
 		long errcode = 0;
 		getLastError(errcode);
 		if (errcode == 2006) {
-			LERROR << "断开连接错误。";
+			LERROR << "db breaked.";
 			close();
 		}
 	}

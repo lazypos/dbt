@@ -68,6 +68,6 @@ void CLoginSvr::listener_cb(struct evconnlistener* listener, evutil_socket_t fd,
 		conn->initConnect(server->_eventbase, fd, buf);
 
 		server->_mapConnected.emplace(conn, 0);
-		LINFO << "当起已有连接数:" << server->_mapConnected.size();
+		LINFO << "total connected counts:" << server->_mapConnected.size();
 	}
 }

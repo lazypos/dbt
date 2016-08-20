@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 	if (loginSvr::Instance()->start(5183)){
 		loginSvr::Instance()->run();
 	}
-	LERROR << "³ÌÐòÍË³ö";
+	LERROR << "program exit...";
 
 #ifdef WIN32
 	WSACleanup();
