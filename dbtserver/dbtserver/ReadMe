@@ -1,0 +1,9 @@
+dbt table:
+id|username|password|nickname|counts|win|logincounts|run|logintime
+
+<= logncmd=login;type=login;user=xxxx;pass=xxxx
+=> logntype=login;result=ok/xxxxx
+<= logncmd=login;type=regist;user=xxxx;pass=xxxx;nick=xxxx
+=> logntype=regist;result=ok/xxxxx
+
+<= hallcmd=
