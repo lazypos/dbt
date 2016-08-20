@@ -1,23 +1,25 @@
 #makefile for dbtserver
 
-TARGET_FILE=./dbtserver
+TARGET_FILE=dbtsvr
 
 CC=g++
-CFLAG=
-LIBNAMES=-llibmysql -llibevent
+CFLAG=-c -std=c++11
+INCLUDE=-I/usr/include/mysql
+#LIBPATH=-L/usr/lib/x86_64-linux-gnu
+LIBNAMES=-lmysqlclient -levent -lpthread -ldl
 OBJS=dbtserver.o Config.o Connect.o DBManager.o Desk.o Global.o Hall.o LoginSvr.o
 OBJS+=Player.o SqlmyOpt.o SqlmyResult.o
 
-all:$(OBJS)
-	$(CC) -o $(TARGET_FILE)  $@ $(LIBNAMES) 
+$(TARGET_FILE):$(OBJS)
+	$(CC) -o $(TARGET_FILE) $^ $(LIBNAMES) 
 
-.o:.cpp
-	$(CC) $(CFLAG) $< $(LIBNAMES)
+$(OBJS):./dbtserver/*.cpp
+	$(CC) $(CFLAG) $^ $(INCLUDE) $(LIBNAMES)
 
 
 .PHONY:clean cleanall
-clear:
-	rm -rf ./dbtserver/*.o
+clean:
+	rm -rf $(OBJS)
 cleanall:
-	rm -rf ./dbtserver/*.o
-	rm -f ./dbtserver
+	rm -rf $(OBJS)
+	rm -f $(TARGET_FILE)
