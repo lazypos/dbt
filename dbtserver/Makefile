@@ -7,8 +7,8 @@ CFLAG=-c -std=c++11
 INCLUDE=-I/usr/include/mysql
 #LIBPATH=-L/usr/lib/x86_64-linux-gnu
 LIBNAMES=-lmysqlclient -levent -lpthread -ldl
-OBJS=dbtserver.o Config.o Connect.o DBManager.o Desk.o Global.o Hall.o LoginSvr.o
-OBJS+=Player.o SqlmyOpt.o SqlmyResult.o
+OBJS=dbtserver.o Config.o Connect.o DBManager.o Desk.o Global.o Hall.o
+OBJS+=Player.o SqlmyOpt.o SqlmyResult.o DBTRule.o LoginSvr.o
 
 $(TARGET_FILE):$(OBJS)
 	$(CC) -o $(TARGET_FILE) $^ $(LIBNAMES) 

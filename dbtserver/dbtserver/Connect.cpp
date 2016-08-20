@@ -42,9 +42,9 @@ void CConnect::closeConnect()
 
 void CConnect::replay(const string& context)
 {
-	size_t len = context.length();
-	string strReply(4, 0);
-	memcmp((char*)strReply.c_str(), &len, def_header_len);
+	char len = char(context.length());
+	string strReply(def_header_len, 0);
+	memcpy((char*)strReply.c_str(), &len, def_header_len);
 	strReply += context;
 	if (bufferevent_write(_evbuffer, strReply.c_str(), strReply.length()) == -1) {
 		LERROR << "Send client message failed." << _remoteIp;
@@ -107,6 +107,7 @@ void CConnect::processLogin()
 			replay("logntype=login;result=ÒÑ¾­µÇÂ¼");
 			return;
 		}
+		string  nickname = _mapRecv["nick"];
 		
 	}
 }
@@ -123,6 +124,6 @@ void CConnect::processDesk()
 
 void CConnect::processOther()
 {
-	LERROR << "´íÎóµÄÃüÁî" << _mapRecv["cmd"] << "->" << _remoteIp;
+	LERROR << "recv error commond" << _mapRecv["cmd"] << "->" << _remoteIp;
 	closeConnect();
 }

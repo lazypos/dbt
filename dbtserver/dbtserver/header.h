@@ -9,6 +9,8 @@
 #include <set>
 #include <thread>
 #include <unordered_map>
+#include <array>
+#include <random>
 
 #ifdef WIN32
 #include <WinSock2.h>

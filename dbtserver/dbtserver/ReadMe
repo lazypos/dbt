@@ -6,4 +6,29 @@ id|username|password|nickname|counts|win|logincounts|run|logintime
 <= logncmd=login;type=regist;user=xxxx;pass=xxxx;nick=xxxx
 => logntype=regist;result=ok/xxxxx
 
-<= hallcmd=
+<= hallcmd=hall;type=getmsg
+=> halltype=getmsg;nick=dagouge;score=123123;total=123;win=12.3%
+<= hallcmd=hall;type=find/add/create
+=> halltype=adddesk;result=ok/-1
+
+<= logncmd=desk;type=getmsg
+#id=自己的座位号  座位号<>昵称<>分数<>总局数<>胜率<>是否已准备|其他人信息|其他人信息
+=> desktype=getmsg;desknum=78;id=1;player=0<>cbs<>2300<>12<>80%<>1|1<>1dsa<>111<>123<>60%<>0|3<>cjl<>1200<>324<>30%<>0
+#准备/离开
+<= logncmd=desk;type=ready/quit
+#有人准备/离开
+=> desktype=play;state=ready/leave;id=3
+#有人加入
+=> desktype=play;state=add;player=2<>cdad<>120<>3222<>22%<>0
+#游戏开始	  出牌者/自己的手牌
+=> desktype=play;state=start;now=1;cards=1,1,3,4,5,6,12,12,34,34,4,42,42,32,12,23,4,6,7,32,25,23,23,21,23,53,45,45,45,6,32,53,15,32,38,40,29,29,28,39,38
+#有人出牌  上一个出牌者/上一次出的牌/上一个剩的手牌/现在将出牌
+=> desktype=play;state=put;per=1;cards=23,23,23;surplus=30;now=2
+#不出
+=> desktype=play;state=put;per=3;now=0;cards=;surplus=30;clear=1
+#走了
+=> desktype=play;state=put;per=0;now=-1;cards=23,23,23;surplus=0;go=1
+#分数变化
+=> desktype=play;state=score;0=120;1=230
+#游戏结束
+=> desktype=play;state=over;n0=dsad;n1=dsad;n2=player3;n3=dsads;s0=20;s1=-20;s2=20;s3=-20

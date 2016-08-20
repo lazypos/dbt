@@ -4,8 +4,7 @@
 #include "define.h"
 
 inline void read_cb(struct bufferevent *bev, void *ctx) {
-	int rLen = 0;
-	int *pLen = &rLen;
+	size_t rLen = 0;
 	CConnect* conn = reinterpret_cast<CConnect*>(ctx);
 	size_t recvLen = evbuffer_get_length(bufferevent_get_input(bev));
 	// 收到数据大于头长度
@@ -13,14 +12,14 @@ inline void read_cb(struct bufferevent *bev, void *ctx) {
 		string strBuf;
 		strBuf.resize(def_header_len, 0);
 		bufferevent_read(bev, (void*)strBuf.c_str(), def_header_len);
-		pLen = reinterpret_cast<int*>(const_cast<char*>(strBuf.c_str()));
+		rLen = strBuf[0];
 		if (rLen < 0){
 			LERROR << "recv error，break client." << conn->getRemoteIP();
 			conn->closeConnect();
 			return;
 		}
 		// 收到全部数据，进行处理
-		if (recvLen == rLen + 4) {
+		if (recvLen >= rLen + def_header_len) {
 			strBuf.resize(rLen, 0);
 			bufferevent_read(bev, (void*)strBuf.c_str(), rLen);
 			conn->dispath(strBuf);

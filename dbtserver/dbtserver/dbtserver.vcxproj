@@ -123,6 +123,7 @@
     <ClInclude Include="DBManager.h" />
     <ClInclude Include="DBOptBase.h" />
     <ClInclude Include="DBResultBase.h" />
+    <ClInclude Include="DBTRule.h" />
     <ClInclude Include="define.h" />
     <ClInclude Include="delegate.h" />
     <ClInclude Include="Desk.h" />
@@ -139,6 +140,7 @@
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="Connect.cpp" />
     <ClCompile Include="DBManager.cpp" />
+    <ClCompile Include="DBTRule.cpp" />
     <ClCompile Include="dbtserver.cpp" />
     <ClCompile Include="Desk.cpp" />
     <ClCompile Include="Global.cpp" />

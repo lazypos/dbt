@@ -1,7 +1,7 @@
 #ifndef _h_define_h_
 #define _h_define_h_
 
-#define def_header_len	4
+#define def_header_len	1
 
 typedef struct  
 {

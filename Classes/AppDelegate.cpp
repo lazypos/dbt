@@ -83,10 +83,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
     //auto scene = HelloWorld::createScene();
 	if (!messageQueue::instance()->start()){
 		MessageBox("连接服务器失败！请检查网络是否正常。","错误");
-		//return false;
+		return false;
 	}
 	resourceMgr::instance()->loadResource();
-	auto scene = CDeskScene::createScene();
+	auto scene = CLoginScene::createScene();
     // run
     director->runWithScene(scene);
 

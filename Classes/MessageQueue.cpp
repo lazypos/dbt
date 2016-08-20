@@ -34,6 +34,12 @@ bool CMessageQueue::start()
 bool CMessageQueue::sendMessage(const string& str)
 {
 	size_t len = 0;
+	char nSend = str.length();
+	int n = send(_sock, (char*)&nSend, 1, 0);
+	if (n != 1) {
+		MessageBox("断开连接，请重新登录!", "error");
+		return false;
+	}
 	while (len < str.length()) {
 		int n = send(_sock, str.c_str() + len, str.length() - len, 0);
 		if (n <= 0){
@@ -47,14 +53,14 @@ bool CMessageQueue::sendMessage(const string& str)
 
 bool CMessageQueue::recvMessage(string& text)
 {
-	size_t len = 0;
-	int n = recv(_sock, (char*)&len, 4, 0);
-	if (n != 4 || len < 0) {
+	char len = 0;
+	int n = recv(_sock, (char*)&len, 1, 0);
+	if (n != 1 || len <= 0) {
 		MessageBox("从服务器接收数据错误.", "error");
 		return false;
 	}
 	size_t recvlen = 0;
-	text.resize(len, 0);
+	text.resize(int(len), 0);
 	while (recvlen < len){
 		n = recv(_sock, (char*)(text.c_str() + recvlen), len - recvlen, 0);
 		if (n <= 0){
