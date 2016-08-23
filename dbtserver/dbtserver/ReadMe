@@ -18,17 +18,15 @@ id|username|password|nickname|counts|win|logincounts|run|logintime
 <= logncmd=desk;type=ready/quit
 #有人准备/离开
 => desktype=play;state=ready/leave;id=3
-#有人加入
+#有人加入 昵称/分数/总数/胜率/逃跑
 => desktype=play;state=add;player=2<>cdad<>120<>3222<>22%<>0
 #游戏开始	  出牌者/自己的手牌
 => desktype=play;state=start;now=1;cards=1,1,3,4,5,6,12,12,34,34,4,42,42,32,12,23,4,6,7,32,25,23,23,21,23,53,45,45,45,6,32,53,15,32,38,40,29,29,28,39,38
-#有人出牌  上一个出牌者/上一次出的牌/上一个剩的手牌/现在将出牌
-=> desktype=play;state=put;per=1;cards=23,23,23;surplus=30;now=2
+#有人出牌  上一个出牌者/上一次出的牌/上一个剩的手牌/现在将出牌/分数/当前分数
+=> desktype=play;state=put;per=1;cards=23,23,23;surplus=30;now=2;0=120;1=230;n=15
 #不出
-=> desktype=play;state=put;per=3;now=0;cards=;surplus=30;clear=1
+=> desktype=play;state=put;per=3;now=0;cards=;surplus=30;clear=1;0=120;1=230;n=15
 #走了
-=> desktype=play;state=put;per=0;now=-1;cards=23,23,23;surplus=0;go=1
-#分数变化
-=> desktype=play;state=score;0=120;1=230
+=> desktype=play;state=put;per=0;now=-1;cards=23,23,23;surplus=0;go=10=120;1=230;n=15
 #游戏结束
 => desktype=play;state=over;n0=dsad;n1=dsad;n2=player3;n3=dsads;s0=20;s1=-20;s2=20;s3=-20

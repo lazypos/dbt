@@ -12,10 +12,28 @@ public:
 	CPlayer();
 	~CPlayer();
 
-	void	setPlayerInfo(playerInfoPtr ptr);
-
-private:
+	inline void		setPlayerInfo(playerInfoPtr ptr) {
+		_infoPtr = ptr;
+	}
+	inline playerInfoPtr	getPlayerInfo() {
+		return _infoPtr;
+	}
+	inline void		setDeskId(int id) {
+		_deskId = id;
+	}
+	inline int		getDeskId() {
+		return _deskId;
+	}
+	inline void		setSeatId(int id) {
+		_seatId = id;
+	}
+	inline int		getSeatId() {
+		return _seatId;
+	}
+protected:
 	playerInfoPtr	_infoPtr;
+	int				_deskId = -1;
+	int				_seatId = -1;
 };
 
 #endif

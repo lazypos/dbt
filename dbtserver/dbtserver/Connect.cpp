@@ -3,6 +3,7 @@
 #include "Global.h"
 #include "Player.h"
 #include "DBManager.h"
+#include "Hall.h"
 
 CConnect::CConnect()
 {
@@ -38,6 +39,7 @@ void CConnect::closeConnect()
 		bufferevent_free(_evbuffer);
 		_evbuffer = nullptr;
 	}
+	_bLogin = false;
 }
 
 void CConnect::replay(const string& context)
@@ -71,6 +73,7 @@ void CConnect::dispath(const string& context)
 		processOther();
 }
 
+//登陆界面的处理
 void CConnect::processLogin()
 {
 	string username = _mapRecv["user"];
@@ -82,19 +85,19 @@ void CConnect::processLogin()
 		return;
 	}
 	if (type == "login") { //登录
-		if (_player) {
+		if (_bLogin) {
 			LERROR << "." << _remoteIp << "->" << username;
 			replay("logntype=login;result=重复登录");
 			return;
 		}
+		_bLogin = true;
 		playerInfoPtr ptr = dbmanager::Instance()->loadPlayer(username);
 		if (!ptr || ptr->mPass != password){
 			LERROR << "login faild, user not exist or pass error." << _remoteIp << "->" << username;
 			replay("logntype=login;result=用户不存在或者密码错误");
 			return;
 		}
-		_player = make_shared<CPlayer>();
-		_player->setPlayerInfo(ptr);
+		setPlayerInfo(ptr);
 		ostringstream os;
 		os << "update dbt set logintime=now(), logincounts=" << ptr->mLoginCounts+1
 			<< " where id=" << ptr->mId;
@@ -102,7 +105,7 @@ void CConnect::processLogin()
 		replay("logntype=login;result=ok");
 	}
 	else if (type == "regist"){ //注册
-		if (_player) {
+		if (_bLogin) {
 			LERROR << "." << _remoteIp << "->" << username;
 			replay("logntype=regist;result=已经登录");
 			return;
@@ -125,11 +128,45 @@ void CConnect::processLogin()
 	LERROR << "收到错误的消息." << _remoteIp;
 }
 
+//大厅的处理
 void CConnect::processHall()
 {
-
+	ostringstream os;
+	string type = _mapRecv["type"];
+	if (type == "getmsg"){ //进入大厅获取必要信息
+		os << "halltype=getmsg;nick=" << getPlayerInfo()->mNick
+			<< ";score=" << getPlayerInfo()->mScore
+			<< ";total=" << getPlayerInfo()->mCount
+			<< ";win=" << getPlayerInfo()->mWin * 100 / getPlayerInfo()->mCount << "%";
+		replay(os.str());
+	}else if (type == "add"){ //加入桌子
+		if (hallMgr::Instance()->addDesk(shared_from_this()) != -1) {
+			replay("halltype=adddesk;result=ok");
+			broadAddDesk(shared_from_this());
+		}
+		else 
+			replay("halltype=adddesk;result=-1");
+	}
+	else if (type == "find") { //查找桌子
+		int id = atoi(_mapRecv["id"].c_str());
+		if (hallMgr::Instance()->findDesk(shared_from_this(), id) != -1){
+			replay("halltype=adddesk;result=ok"); 
+			broadAddDesk(shared_from_this());
+		}
+		else
+			replay("halltype=adddesk;result=-1");
+	}
+	else if (type == "create") {
+		if (hallMgr::Instance()->createDesk(shared_from_this()) != -1) {
+			replay("halltype=adddesk;result=ok");
+			broadAddDesk(shared_from_this());
+		}
+		else
+			replay("halltype=adddesk;result=-1");
+	}
 }
 
+//桌子的处理
 void CConnect::processDesk()
 {
 
@@ -139,4 +176,35 @@ void CConnect::processOther()
 {
 	LERROR << "recv error commond" << _mapRecv["cmd"] << "->" << _remoteIp;
 	closeConnect();
+}
+
+void CConnect::broadAddDesk(player_ptr ptr)
+{
+	int deskId = ptr->getDeskId();
+	int seatId = ptr->getSeatId();
+
+	ostringstream os;
+	os << "desktype=play;state=add;player=" << seatId
+		<< "<>" << ptr->getPlayerInfo()->mNick 
+		<< "<>" << ptr->getPlayerInfo()->mScore
+		<< "<>" << ptr->getPlayerInfo()->mCount 
+		<< "<>" << ptr->getPlayerInfo()->mWin/ptr->getPlayerInfo()->mCount 
+		<<"%<>" << ptr->getPlayerInfo()->mRun;
+	//讲玩家加入的信息通知其他玩家
+	auto players = hallMgr::Instance()->getDeskInfo(deskId)->getPlayer();
+	for (size_t i = 0; i < players.size(); ++i) {
+		if (i != seatId && players[i] != nullptr){
+			static_cast<CConnect*>(players[i].get())->replay(os.str());
+		}
+	}
+}
+
+void CConnect::broadLeaveDesk(player_ptr ptr)
+{
+
+}
+
+void CConnect::broadReady(player_ptr ptr)
+{
+
 }

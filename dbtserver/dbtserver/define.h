@@ -13,6 +13,7 @@ typedef struct
 	int		mWin = 0;
 	int		mRun = 0;
 	int		mLoginCounts = 0;
+	int		mScore = 0;
 
 }stPlayerInfo;
 typedef shared_ptr<stPlayerInfo> playerInfoPtr;

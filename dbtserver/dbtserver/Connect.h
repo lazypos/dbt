@@ -7,7 +7,8 @@ class CConnect;
 typedef shared_ptr<CConnect> conn_ptr;
 
 class CConnect
-	: public enable_shared_from_this<CConnect>
+	: public CPlayer
+	, public enable_shared_from_this<CConnect>
 {
 public:
 	CConnect();
@@ -25,6 +26,10 @@ protected:
 	void	processHall();
 	void	processDesk();
 	void	processOther();
+
+	void	broadAddDesk(player_ptr ptr);
+	void	broadLeaveDesk(player_ptr ptr);
+	void	broadReady(player_ptr ptr);
 	
 private:
 	evutil_socket_t		_fd;
@@ -33,7 +38,7 @@ private:
 	struct bufferevent* _evbuffer;
 	struct event_base*  _evbase;
 	map<string, string> _mapRecv;
-	player_ptr			_player;
+	bool				_bLogin = false;
 };
 
 #endif

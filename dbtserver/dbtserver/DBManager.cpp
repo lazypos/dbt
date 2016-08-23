@@ -43,6 +43,7 @@ playerInfoPtr CDBManager::loadPlayer(const string& user)
 			pInfo->mWin = ptr->GetValueAsInt(5);
 			pInfo->mRun = ptr->GetValueAsInt(6);
 			pInfo->mLoginCounts = ptr->GetValueAsInt(7);
+			pInfo->mScore = ptr->GetValueAsInt(8);
 			return pInfo;
 		}
 	}
