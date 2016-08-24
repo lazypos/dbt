@@ -32,6 +32,7 @@ std::vector<player_ptr> CDesk::getPlayer()
 void CDesk::reStart()
 {
 	_nowScore = 0;
+	_goSeq = 0;
 	for (int i = 0; i < 4; i++) {
 		_vecPlayers[i]->reStart();
 	}

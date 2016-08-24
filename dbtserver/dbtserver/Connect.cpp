@@ -285,19 +285,60 @@ void CConnect::processGetmsg()
 
 void CConnect::processPutCards()
 {
-	//desktype=play;state=over;n0=dsad;n1=dsad;n2=player3;n3=dsads;s0=20;s1=-20;s2=20;s3=-20
-// 	auto players = hallMgr::Instance()->getDeskInfo(_deskId)->getPlayer();
-// 	ostringstream os;
-// 	os << "desktype=play;state=over;"
-// 		<< "n0=" << 
+	//desktype=play;state=put;per=0;now=-1;cards=23,23,23;surplus=0;go=1;0=120;1=230;n=15
+	desk_ptr pDesk = hallMgr::Instance()->getDeskInfo(_deskId);
+	auto players = pDesk->getPlayer();
+	string cards = _mapRecv["cards"];
+	//整理牌
+	vector<string> ctmp;
+	vector<int> nowcards;
+	stringToVector(cards, ctmp, ",");
+	for (auto it : ctmp)
+		nowcards.push_back(atoi(it.c_str()));
+	sort(nowcards.begin(), nowcards.end());
+	int surplus = _vecCards.size() - nowcards.size();
+	//是否大于前面的牌
+	if (surplus >= 0 && CDBTRule::isBigger(pDesk->_lastPutCards, nowcards)) {
+		//计算下一个出牌的
+		int nextPut = 0;
+		for (size_t i = 0; i < 4; i++) {
+			if (!players[(_seatId + 1) % 4]->isOver())
+				nextPut = (_seatId + 1) % 4;
+		}
+		ostringstream os;
+		os << "desktype=play;state=put;per=" << _seatId
+			<< ";now=" << nextPut
+			<< ";cards=" << cards
+			<< ";surplus=" << surplus
+			<< ";0=" << players[0]->getScore() + players[2]->getScore()
+			<< ";1=" << players[1]->getScore() + players[3]->getScore();
+		if (surplus == 0) {
+			os << ";go=1";
+			_goneNum = getGoneNum() + 1;
+			pDesk->setGo(_goneNum);
+			if (isGameOver())
+				return;
+		}
+		replay(os.str());
+	}
+	else {
+		LERROR << "出牌错误,强制关闭." << _remoteIp;
+		closeConnect();
+	}
+	pDesk->_lastPutCards.clear();
+	pDesk->lastPut(_seatId);
 }
 
 void CConnect::processNoPutCards()
 {
 	//=> desktype=play;state=put;per=3;now=0;cards=;surplus=30;clear=1;0=120;1=230;n=15
 	desk_ptr pDesk = hallMgr::Instance()->getDeskInfo(_deskId);
-	if (pDesk->getLastPut() == _seatId){ //不允许不出牌
-		//int putCard = _vecCards[0];
+	if (pDesk->getLastPut() == _seatId){ //不允许不出牌,出第一张牌
+		int n = _vecCards[0];
+		ostringstream os;
+		os << n;
+		_mapRecv["cards"] = os.str();
+		processPutCards();
 		return;
 	}
 	//不出牌
@@ -318,6 +359,7 @@ void CConnect::processNoPutCards()
 		else
 			score1 += pDesk->getScore();
 		pDesk->setScore(0);
+		pDesk->_lastPutCards.clear();
 		//是否结束
 		if (isGameOver())
 			return;
@@ -325,9 +367,9 @@ void CConnect::processNoPutCards()
 
 	ostringstream os;
 	os << "desktype=play;state=put;per=" << _seatId
-		<< ";now=" << (_seatId + 1) % 4
+		<< ";now=" << nextPut
 		<< ";cards=;surplus=" << _vecCards.size()
-		<< ";clear=1;0=" << score0
+		<< ";clear=0;0=" << score0
 		<< ";1=" << score1
 		<< ";n=" << pDesk->getScore();
 	replay(os.str());
@@ -350,39 +392,72 @@ bool CConnect::isGameOver()
 			<< ";n2=" << players[2]->getPlayerInfo()->mNick
 			<< ";n3=" << players[3]->getPlayerInfo()->mNick;
 		int n = 0;
+		ostringstream sql;
 		if (rst == CDBTRule::over_draw) { //平局
 			os << ";s0=0;s1=0;s2=0;s3=0";
+			sql << "update dbt set counts=counts+1 where id=" << getPlayerInfo()->mId;
+			dbmanager::Instance()->addSql(sql.str());
 		} else {
 			if (rst == CDBTRule::over_lose) { //输
 				os << ";s" << n << "=" << "-10"
 					<< ";s" << (n + 1) % 4 << "=" << "10"
 					<< ";s" << (n + 2) % 4 << "=" << "-10"
 					<< ";s" << (n + 3) % 4 << "=" << "10";
+				sql << "update dbt set counts=counts+1, score=score-10 where id=" << getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score+10 where id=" << players[(n + 1) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score-10 where id=" << players[(n + 2) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score+10 where id=" << players[(n + 3) % 4]->getPlayerInfo()->mId << ";";
+					dbmanager::Instance()->addSql(sql.str());
 			}else if (rst == CDBTRule::over_lose_dual){
 				os << ";s" << n << "=" << "-20"
 					<< ";s" << (n + 1) % 4 << "=" << "20"
 					<< ";s" << (n + 2) % 4 << "=" << "-20"
 					<< ";s" << (n + 3) % 4 << "=" << "20";
+				sql << "update dbt set counts=counts+1, score=score-20 where id=" << getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score+20 where id=" << players[(n + 1) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score-20 where id=" << players[(n + 2) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score+20 where id=" << players[(n + 3) % 4]->getPlayerInfo()->mId << ";";
+				dbmanager::Instance()->addSql(sql.str());
 			}else if (rst == CDBTRule::over_lose_quad) {
 				os << ";s" << n << "=" << "-40"
 					<< ";s" << (n + 1) % 4 << "=" << "40"
 					<< ";s" << (n + 2) % 4 << "=" << "-40"
 					<< ";s" << (n + 3) % 4 << "=" << "40";
+				sql << "update dbt set counts=counts+1, score=score-40 where id=" << getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score+40 where id=" << players[(n + 1) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score-40 where id=" << players[(n + 2) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score+40 where id=" << players[(n + 3) % 4]->getPlayerInfo()->mId << ";";
+				dbmanager::Instance()->addSql(sql.str());
 			}else if (rst == CDBTRule::over_win) { //赢
 				os << ";s" << n << "=" << "10"
 					<< ";s" << (n + 1) % 4 << "=" << "-10"
 					<< ";s" << (n + 2) % 4 << "=" << "10"
 					<< ";s" << (n + 3) % 4 << "=" << "-10";
+				sql << "update dbt set counts=counts+1, score=score+10 where id=" << getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score-10 where id=" << players[(n + 1) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score+10 where id=" << players[(n + 2) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score-10 where id=" << players[(n + 3) % 4]->getPlayerInfo()->mId << ";";
+				dbmanager::Instance()->addSql(sql.str());
 			}else if (rst == CDBTRule::over_win_dual) {
 				os << ";s" << n << "=" << "20"
 					<< ";s" << (n + 1) % 4 << "=" << "-20"
 					<< ";s" << (n + 2) % 4 << "=" << "20"
 					<< ";s" << (n + 3) % 4 << "=" << "-20";
+				sql << "update dbt set counts=counts+1, score=score+20 where id=" << getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score-20 where id=" << players[(n + 1) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score+20 where id=" << players[(n + 2) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score-20 where id=" << players[(n + 3) % 4]->getPlayerInfo()->mId << ";";
+				dbmanager::Instance()->addSql(sql.str());
 			}else if (rst == CDBTRule::over_win_quad) {
 				os << ";s" << n << "=" << "40"
 					<< ";s" << (n + 1) % 4 << "=" << "-40"
 					<< ";s" << (n + 2) % 4 << "=" << "40"
 					<< ";s" << (n + 3) % 4 << "=" << "-40";
+				sql << "update dbt set counts=counts+1, score=score+40 where id=" << getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score-40 where id=" << players[(n + 1) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score+40 where id=" << players[(n + 2) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score-40 where id=" << players[(n + 3) % 4]->getPlayerInfo()->mId << ";";
+				dbmanager::Instance()->addSql(sql.str());
 			}
 		}
 		replay(os.str());

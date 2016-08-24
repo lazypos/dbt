@@ -27,16 +27,23 @@ public:
 	inline	int		getLastPut() {
 		return _lastPutPlayers;
 	}
+	inline	void	setGo(int n) {
+		_goSeq = n;
+	}
+	inline	int		getGo() {
+		return _goSeq;
+	}
 
 	void	reStart();
 
+	vector<int>				_lastPutCards;
 private:
 	int						_deskId = 0;
 	mutex					_muxDesk;
 	vector<player_ptr>		_vecPlayers;
 	int						_nowScore = 0;
-	vector<int>				_lastPutCards;
 	int						_lastPutPlayers = 0;
+	int						_goSeq = 0;
 };
 
 #endif
