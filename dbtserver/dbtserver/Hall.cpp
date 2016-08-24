@@ -13,10 +13,7 @@ CHall::~CHall()
 
 int CHall::addDesk(player_ptr ptr)
 {
-	if (ptr->getDeskId() != -1){
-		return -1;
-	}
-	unique_lock<mutex>	ul(_muxDesk);
+	lock_guard<mutex>	ul(_muxHall);
 	for (auto &it : _mapDesk) {
 		int id = it.second->addPlayer(ptr);
 		if (id != -1) {
@@ -29,10 +26,7 @@ int CHall::addDesk(player_ptr ptr)
 
 int CHall::findDesk(player_ptr ptr, int id)
 {
-	if (ptr->getDeskId() != -1) {
-		return -1;
-	}
-	unique_lock<mutex>	ul(_muxDesk);
+	lock_guard<mutex>	ul(_muxHall);
 	auto it = _mapDesk.find(id);
 	if (it != _mapDesk.end()){
 		if (it->second->addPlayer(ptr))
@@ -43,22 +37,23 @@ int CHall::findDesk(player_ptr ptr, int id)
 
 int CHall::createDesk(player_ptr ptr)
 {
-	if (ptr->getDeskId() != -1) {
-		return -1;
-	}
-	unique_lock<mutex>	ul(_muxDesk);
+	lock_guard<mutex>	ul(_muxHall);
 	return create_desk(ptr);
 }
 
 desk_ptr CHall::getDeskInfo(int id)
 {
-	unique_lock<mutex>	ul(_muxDesk);
+	lock_guard<mutex>	ul(_muxHall);
 	return _mapDesk[id];
 }
 
 int CHall::create_desk(player_ptr ptr)
 {
-	int id = _mapDesk.rbegin()->first;
+	int id = 0;
+	if (_mapDesk.empty())
+		id = 1;
+	else
+		id = _mapDesk.rbegin()->first;
 	do {
 		id++;
 	} while (_mapDesk.find(id) != _mapDesk.end());

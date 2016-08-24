@@ -5,7 +5,6 @@ TARGET_FILE=dbtsvr
 CC=g++
 CFLAG=-c -std=c++11
 INCLUDE=-I/usr/include/mysql
-#LIBPATH=-L/usr/lib/x86_64-linux-gnu
 LIBNAMES=-lmysqlclient -levent -lpthread -ldl
 OBJS=dbtserver.o Config.o Connect.o DBManager.o Desk.o Global.o Hall.o
 OBJS+=Player.o SqlmyOpt.o SqlmyResult.o DBTRule.o LoginSvr.o

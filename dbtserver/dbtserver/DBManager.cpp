@@ -43,7 +43,12 @@ playerInfoPtr CDBManager::loadPlayer(const string& user)
 			pInfo->mWin = ptr->GetValueAsInt(5);
 			pInfo->mRun = ptr->GetValueAsInt(6);
 			pInfo->mLoginCounts = ptr->GetValueAsInt(7);
-			pInfo->mScore = ptr->GetValueAsInt(8);
+			pInfo->mScore = ptr->GetValueAsInt(9);
+
+			ostringstream os;
+			os << "update dbt set logintime=now(), logincounts=logincounts+1 where id=" << pInfo->mId;
+			dbmanager::Instance()->addSql(os.str());
+
 			return pInfo;
 		}
 	}
@@ -52,7 +57,7 @@ playerInfoPtr CDBManager::loadPlayer(const string& user)
 
 bool CDBManager::registPlayer(const string& user, const string& pass, const string nick)
 {
-	string sql = "select * from dbt where user='" + user + "'";
+	string sql = "select * from dbt where username='" + user + "'";
 	DBResultPtr ptr;
 	if (_dbopt.query(sql, ptr) && ptr->IsEof()){
 		sql = "insert into dbt (username,password,nickname) values('"
@@ -64,7 +69,7 @@ bool CDBManager::registPlayer(const string& user, const string& pass, const stri
 
 void CDBManager::addSql(const string& sql)
 {
-	unique_lock<mutex> lk(_mux);
+	lock_guard<mutex> lk(_mux);
 	_lstSql.push_back(sql);
 }
 

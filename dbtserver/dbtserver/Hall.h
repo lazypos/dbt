@@ -19,7 +19,7 @@ protected:
 	int		create_desk(player_ptr ptr);
 private:
 	map<int, desk_ptr>	_mapDesk;
-	mutex				_muxDesk;
+	mutex				_muxHall;
 };
 
 typedef CMySingleton<CHall> hallMgr;

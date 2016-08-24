@@ -495,7 +495,7 @@ void CDeskScene::ObserverPlaying(Ref* sendmsg)
 		if (it != mapRst.end()) {//自己的座位号
 			_seatNum = atoi(it->second.c_str());
 			int i = _seatNum;
-			for (auto &it : _vecPlayers) {
+			for (auto it : _vecPlayers) {
 				_mapPlayers[i%4] = it;
 				it->id = i % 4;
 				i++;

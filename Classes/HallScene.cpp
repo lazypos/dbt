@@ -139,7 +139,7 @@ void CHallScene::ObserverAddDesk(Ref* sendmsg)
 	stringToMap(p->_string, mapRst, ";");
 	if (mapRst["type"] == "getmsg") {
 		//ÉèÖÃÐÅÏ¢
-		_nickName->setString(mapRst["user"]);
+		_nickName->setString(mapRst["nick"]);
 		_score->setString(mapRst["score"]);
 		_total->setString(mapRst["total"]);
 		_win->setString(mapRst["win"]);

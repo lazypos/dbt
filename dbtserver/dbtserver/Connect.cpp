@@ -99,10 +99,6 @@ void CConnect::processLogin()
 			return;
 		}
 		setPlayerInfo(ptr);
-		ostringstream os;
-		os << "update dbt set logintime=now(), logincounts=" << ptr->mLoginCounts+1
-			<< " where id=" << ptr->mId;
-		dbmanager::Instance()->addSql(os.str());
 		replay("logntype=login;result=ok");
 	}
 	else if (type == "regist"){ //注册
@@ -133,12 +129,12 @@ void CConnect::processLogin()
 void CConnect::processHall()
 {
 	string type = _mapRecv["type"];
-	if (type == "getmsg"){ //进入大厅获取必要信息
+	if (type == "getmsg"){ //进入大厅获取必要信息	
 		ostringstream os;
 		os << "halltype=getmsg;nick=" << getPlayerInfo()->mNick
 			<< ";score=" << getPlayerInfo()->mScore
 			<< ";total=" << getPlayerInfo()->mCount
-			<< ";win=" << getPlayerInfo()->mWin * 100 / getPlayerInfo()->mCount << "%";
+			<< ";win=" << getPlayerInfo()->mWin * 100 /(getPlayerInfo()->mCount==0?1: getPlayerInfo()->mCount) << "%";
 		replay(os.str());
 	}else if (type == "add"){ //加入桌子
 		if (hallMgr::Instance()->addDesk(shared_from_this()) != -1) {
@@ -197,10 +193,11 @@ void CConnect::broadAddDesk()
 		<< "<>" << getPlayerInfo()->mNick 
 		<< "<>" << getPlayerInfo()->mScore
 		<< "<>" << getPlayerInfo()->mCount 
-		<< "<>" << getPlayerInfo()->mWin/getPlayerInfo()->mCount 
+		<< "<>" << getPlayerInfo()->mWin/ (getPlayerInfo()->mCount == 0 ? 1 : getPlayerInfo()->mCount)
 		<<"%<>0";
 	//通知其他玩家
-	auto players = hallMgr::Instance()->getDeskInfo(_deskId)->getPlayer();
+	auto pDesk = hallMgr::Instance()->getDeskInfo(_deskId);
+	auto players = pDesk->getPlayer();
 	for (size_t i = 0; i < players.size(); ++i) {
 		if (i != _seatId && players[i] != nullptr)
 			static_cast<CConnect*>(players[i].get())->replay(os.str());
@@ -212,11 +209,14 @@ void CConnect::broadLeaveDesk()
 	ostringstream os;
 	os << "desktype=play;state=leave;id=" << _seatId;
 	//将玩家加入的信息通知其他玩家
-	auto players = hallMgr::Instance()->getDeskInfo(_deskId)->getPlayer();
+	auto pDesk = hallMgr::Instance()->getDeskInfo(_deskId);
+	auto players = pDesk->getPlayer();
 	for (size_t i = 0; i < players.size(); ++i) {
 		if (i != _seatId && players[i] != nullptr)
 			static_cast<CConnect*>(players[i].get())->replay(os.str());
 	}
+	_deskId = -1;
+	_seatId = -1;
 }
 
 void CConnect::broadReady()
@@ -272,7 +272,7 @@ void CConnect::processGetmsg()
 				<< "<>" << players[i]->getPlayerInfo()->mNick
 				<< "<>" << players[i]->getPlayerInfo()->mScore
 				<< "<>" << players[i]->getPlayerInfo()->mCount
-				<< "<>" << players[i]->getPlayerInfo()->mWin / players[i]->getPlayerInfo()->mCount
+				<< "<>" << players[i]->getPlayerInfo()->mWin /(players[i]->getPlayerInfo()->mCount == 0 ? 1 : players[i]->getPlayerInfo()->mCount)
 				<< "%<>" << players[i]->isReady()
 				<< "|";
 		}
@@ -404,9 +404,9 @@ bool CConnect::isGameOver()
 					<< ";s" << (n + 2) % 4 << "=" << "-10"
 					<< ";s" << (n + 3) % 4 << "=" << "10";
 				sql << "update dbt set counts=counts+1, score=score-10 where id=" << getPlayerInfo()->mId << ";"
-					<< "update dbt set counts=counts+1, score=score+10 where id=" << players[(n + 1) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score+10, win=win+1 where id=" << players[(n + 1) % 4]->getPlayerInfo()->mId << ";"
 					<< "update dbt set counts=counts+1, score=score-10 where id=" << players[(n + 2) % 4]->getPlayerInfo()->mId << ";"
-					<< "update dbt set counts=counts+1, score=score+10 where id=" << players[(n + 3) % 4]->getPlayerInfo()->mId << ";";
+					<< "update dbt set counts=counts+1, score=score+10, win=win+1 where id=" << players[(n + 3) % 4]->getPlayerInfo()->mId << ";";
 					dbmanager::Instance()->addSql(sql.str());
 			}else if (rst == CDBTRule::over_lose_dual){
 				os << ";s" << n << "=" << "-20"
@@ -414,9 +414,9 @@ bool CConnect::isGameOver()
 					<< ";s" << (n + 2) % 4 << "=" << "-20"
 					<< ";s" << (n + 3) % 4 << "=" << "20";
 				sql << "update dbt set counts=counts+1, score=score-20 where id=" << getPlayerInfo()->mId << ";"
-					<< "update dbt set counts=counts+1, score=score+20 where id=" << players[(n + 1) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score+20, win=win+1 where id=" << players[(n + 1) % 4]->getPlayerInfo()->mId << ";"
 					<< "update dbt set counts=counts+1, score=score-20 where id=" << players[(n + 2) % 4]->getPlayerInfo()->mId << ";"
-					<< "update dbt set counts=counts+1, score=score+20 where id=" << players[(n + 3) % 4]->getPlayerInfo()->mId << ";";
+					<< "update dbt set counts=counts+1, score=score+20, win=win+1 where id=" << players[(n + 3) % 4]->getPlayerInfo()->mId << ";";
 				dbmanager::Instance()->addSql(sql.str());
 			}else if (rst == CDBTRule::over_lose_quad) {
 				os << ";s" << n << "=" << "-40"
@@ -424,18 +424,18 @@ bool CConnect::isGameOver()
 					<< ";s" << (n + 2) % 4 << "=" << "-40"
 					<< ";s" << (n + 3) % 4 << "=" << "40";
 				sql << "update dbt set counts=counts+1, score=score-40 where id=" << getPlayerInfo()->mId << ";"
-					<< "update dbt set counts=counts+1, score=score+40 where id=" << players[(n + 1) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score+40, win=win+1 where id=" << players[(n + 1) % 4]->getPlayerInfo()->mId << ";"
 					<< "update dbt set counts=counts+1, score=score-40 where id=" << players[(n + 2) % 4]->getPlayerInfo()->mId << ";"
-					<< "update dbt set counts=counts+1, score=score+40 where id=" << players[(n + 3) % 4]->getPlayerInfo()->mId << ";";
+					<< "update dbt set counts=counts+1, score=score+40, win=win+1 where id=" << players[(n + 3) % 4]->getPlayerInfo()->mId << ";";
 				dbmanager::Instance()->addSql(sql.str());
 			}else if (rst == CDBTRule::over_win) { //赢
 				os << ";s" << n << "=" << "10"
 					<< ";s" << (n + 1) % 4 << "=" << "-10"
 					<< ";s" << (n + 2) % 4 << "=" << "10"
 					<< ";s" << (n + 3) % 4 << "=" << "-10";
-				sql << "update dbt set counts=counts+1, score=score+10 where id=" << getPlayerInfo()->mId << ";"
+				sql << "update dbt set counts=counts+1, score=score+10, win=win+1 where id=" << getPlayerInfo()->mId << ";"
 					<< "update dbt set counts=counts+1, score=score-10 where id=" << players[(n + 1) % 4]->getPlayerInfo()->mId << ";"
-					<< "update dbt set counts=counts+1, score=score+10 where id=" << players[(n + 2) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score+10, win=win+1 where id=" << players[(n + 2) % 4]->getPlayerInfo()->mId << ";"
 					<< "update dbt set counts=counts+1, score=score-10 where id=" << players[(n + 3) % 4]->getPlayerInfo()->mId << ";";
 				dbmanager::Instance()->addSql(sql.str());
 			}else if (rst == CDBTRule::over_win_dual) {
@@ -443,9 +443,9 @@ bool CConnect::isGameOver()
 					<< ";s" << (n + 1) % 4 << "=" << "-20"
 					<< ";s" << (n + 2) % 4 << "=" << "20"
 					<< ";s" << (n + 3) % 4 << "=" << "-20";
-				sql << "update dbt set counts=counts+1, score=score+20 where id=" << getPlayerInfo()->mId << ";"
+				sql << "update dbt set counts=counts+1, score=score+20, win=win+1 where id=" << getPlayerInfo()->mId << ";"
 					<< "update dbt set counts=counts+1, score=score-20 where id=" << players[(n + 1) % 4]->getPlayerInfo()->mId << ";"
-					<< "update dbt set counts=counts+1, score=score+20 where id=" << players[(n + 2) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score+20, win=win+1 where id=" << players[(n + 2) % 4]->getPlayerInfo()->mId << ";"
 					<< "update dbt set counts=counts+1, score=score-20 where id=" << players[(n + 3) % 4]->getPlayerInfo()->mId << ";";
 				dbmanager::Instance()->addSql(sql.str());
 			}else if (rst == CDBTRule::over_win_quad) {
@@ -453,9 +453,9 @@ bool CConnect::isGameOver()
 					<< ";s" << (n + 1) % 4 << "=" << "-40"
 					<< ";s" << (n + 2) % 4 << "=" << "40"
 					<< ";s" << (n + 3) % 4 << "=" << "-40";
-				sql << "update dbt set counts=counts+1, score=score+40 where id=" << getPlayerInfo()->mId << ";"
+				sql << "update dbt set counts=counts+1, score=score+40, win=win+1 where id=" << getPlayerInfo()->mId << ";"
 					<< "update dbt set counts=counts+1, score=score-40 where id=" << players[(n + 1) % 4]->getPlayerInfo()->mId << ";"
-					<< "update dbt set counts=counts+1, score=score+40 where id=" << players[(n + 2) % 4]->getPlayerInfo()->mId << ";"
+					<< "update dbt set counts=counts+1, score=score+40, win=win+1 where id=" << players[(n + 2) % 4]->getPlayerInfo()->mId << ";"
 					<< "update dbt set counts=counts+1, score=score-40 where id=" << players[(n + 3) % 4]->getPlayerInfo()->mId << ";";
 				dbmanager::Instance()->addSql(sql.str());
 			}
