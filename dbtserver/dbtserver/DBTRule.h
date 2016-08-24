@@ -36,7 +36,7 @@ public:
 	CDBTRule();
 	~CDBTRule();
 
-	static void		shuffleCards(std::array<int,216>& arrCards, int times);
+	static void		shuffleCards(std::array<int,216>& arrCards, int times = 2);
 
 	static	bool	checkCards(std::vector<int>& cards);
 	static	int		getValue(int card) { return card / 4; };

@@ -1,7 +1,5 @@
 #include "Desk.h"
 
-
-
 CDesk::CDesk(int id)
 	:	_deskId(id)
 {
@@ -29,5 +27,13 @@ std::vector<player_ptr> CDesk::getPlayer()
 {
 	unique_lock<mutex> ul(_muxDesk);
 	return _vecPlayers;
+}
+
+void CDesk::reStart()
+{
+	_nowScore = 0;
+	for (int i = 0; i < 4; i++) {
+		_vecPlayers[i]->reStart();
+	}
 }
 

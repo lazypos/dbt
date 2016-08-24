@@ -27,10 +27,17 @@ protected:
 	void	processDesk();
 	void	processOther();
 
-	void	broadAddDesk(player_ptr ptr);
-	void	broadLeaveDesk(player_ptr ptr);
-	void	broadReady(player_ptr ptr);
-	
+	void	broadAddDesk();
+	void	broadLeaveDesk();
+	void	broadReady();
+
+	//deskµÄ
+	void	processGetmsg();
+	void	processPutCards();
+	void	processNoPutCards();
+
+	bool	isGameOver();
+
 private:
 	evutil_socket_t		_fd;
 	uint32_t			_remotedwIp;
