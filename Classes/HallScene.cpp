@@ -8,6 +8,11 @@
 #include "CommonFunction.h"
 
 USING_NS_CC;
+bool		changeScene = false;
+bool		bsend = false;
+string 						_hallrecvType;
+map<string, string>			_hallmapRecv;
+mutex						_hallmuxRecv;
 
 Scene* CHallScene::createScene()
 {
@@ -90,6 +95,7 @@ bool CHallScene::init()
 	this->addChild(_win, 2);
 	
 	this->scheduleUpdate();
+	bsend = false;
 	//注册观察者
 	__NotificationCenter::getInstance()->addObserver(this, CC_CALLFUNCO_SELECTOR(CHallScene::ObserverAddDesk), "hall", nullptr);
 	messageQueue::instance()->sendMessage("cmd=hall;type=getmsg");
@@ -126,28 +132,24 @@ void CHallScene::OnFastAddDesk(Ref *pSender, ui::Widget::TouchEventType type)
 		if (messageQueue::instance()->sendMessage("cmd=hall;type=add"))
 			bsend = true;
 #ifdef _DEBUG
-		Scene *scene = CDeskScene::createScene();
-		Director::getInstance()->replaceScene(scene);
+// 		Scene *scene = CDeskScene::createScene();
+// 		Director::getInstance()->replaceScene(scene);
 #endif
 	}
 }
 
 void CHallScene::ObserverAddDesk(Ref* sendmsg)
 {
+	lock_guard<mutex> lg(_hallmuxRecv);
 	__String* p = (__String*)sendmsg;
 	map<string, string> mapRst;
 	stringToMap(p->_string, mapRst, ";");
 	if (mapRst["type"] == "getmsg") {
-		//设置信息
-		_nickName->setString(mapRst["nick"]);
-		_score->setString(mapRst["score"]);
-		_total->setString(mapRst["total"]);
-		_win->setString(mapRst["win"]);
+		_hallrecvType = "getmsg";
+		_hallmapRecv = mapRst;
 	}
 	if (mapRst["type"] == "adddesk") {
 		if (mapRst["result"] == "ok") {
-			//加入桌子成功，取消观察，场景切换
-			__NotificationCenter::getInstance()->removeObserver(this, "hall");
 			changeScene = true;
 			return;
 		}
@@ -163,8 +165,20 @@ void CHallScene::ObserverAddDesk(Ref* sendmsg)
 
 void CHallScene::update(float delta)
 {
+	lock_guard<mutex> lg(_hallmuxRecv);
 	if (changeScene){
+		changeScene = false;
+		//加入桌子成功，取消观察，场景切换
+		__NotificationCenter::getInstance()->removeObserver(this, "hall");
 		Scene *scene = CDeskScene::createScene();
 		Director::getInstance()->replaceScene(scene);
+	}
+
+	if (_hallrecvType == "getmsg"){
+		_nickName->setString(_hallmapRecv["nick"]);
+		_score->setString(_hallmapRecv["score"]);
+		_total->setString(_hallmapRecv["total"]);
+		_win->setString(_hallmapRecv["win"]);
+		_hallrecvType.clear();
 	}
 }

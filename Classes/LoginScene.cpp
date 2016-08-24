@@ -8,6 +8,7 @@
 #include "MessageQueue.h"
 
 USING_NS_CC;
+bool	replaceScene = false;
 
 Scene* CLoginScene::createScene()
 {
@@ -192,11 +193,8 @@ void CLoginScene::ObserverLoginRegiste(Ref* sendmsg)
 	stringToMap(p->_string, mapRst, ";");
 	//登陆
 	if (mapRst["type"] == "login"){
-		if (mapRst["result"] == "ok") {
-			//登陆成功，取消观察，场景切换(不能直接在此处切换)
-			__NotificationCenter::getInstance()->removeObserver(this, "logn");
+		if (mapRst["result"] == "ok")
 			replaceScene = true;
-		}
 		else
 			MessageBox("用户名不存在或者密码错误！\r\n如果没有账号，请在右侧注册新账号。", "提醒");
 	}
@@ -214,6 +212,9 @@ void CLoginScene::ObserverLoginRegiste(Ref* sendmsg)
 void CLoginScene::update(float dt)
 {
 	if (replaceScene){
+		replaceScene = false;
+		//登陆成功，取消观察，场景切换(不能直接在此处切换)
+		__NotificationCenter::getInstance()->removeObserver(this, "logn");
 		Scene *hall = CHallScene::createScene();
 		Director::getInstance()->replaceScene(hall);
 	}

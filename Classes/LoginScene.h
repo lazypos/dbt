@@ -34,7 +34,6 @@ private:
 	ui::Button* btreg;
 
 	bool	bSend = false;
-	bool	replaceScene = false;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

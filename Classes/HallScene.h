@@ -28,8 +28,6 @@ private:
 	ui::Button* btCreadAdd;
 	ui::Button* btFastAdd;
 	ui::Button* btFindAdd;
-	bool		bsend = false;
-	bool		changeScene = false;
 
 	Label* _nickName;
 	Label* _score;

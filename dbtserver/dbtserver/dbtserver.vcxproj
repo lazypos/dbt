@@ -72,6 +72,10 @@
     <IncludePath>..\..\..\mysql-connector-c-6.1.6-win32\include;..\..\..\libevent-2.0.22-stable\include;..\..\..\libevent-2.0.22-stable\WIN32-Code;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\mysql-connector-c-6.1.6-win32\lib;..\..\..\libevent-2.0.22-stable;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>H:\work\libevent-2.0.22-stable\WIN32-Code;H:\work\mysql-connector-c-6.1.6-win32\include;H:\work\libevent-2.0.22-stable\include;$(IncludePath)</IncludePath>
+    <LibraryPath>H:\work\libevent-2.0.22-stable;H:\work\mysql-connector-c-6.1.6-win32\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -88,6 +92,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

@@ -17,6 +17,7 @@ public:
 
 protected:
 	int		create_desk(player_ptr ptr);
+	void	leave_desk(player_ptr ptr);
 private:
 	map<int, desk_ptr>	_mapDesk;
 	mutex				_muxHall;

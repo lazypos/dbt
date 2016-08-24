@@ -201,7 +201,11 @@ void CConnect::broadAddDesk()
 	for (size_t i = 0; i < players.size(); ++i) {
 		if (i != _seatId && players[i] != nullptr)
 			static_cast<CConnect*>(players[i].get())->replay(os.str());
+		if (i == _seatId) {//É¾³ýÍæ¼Ò
+			players[i] = nullptr;
+		}
 	}
+	//
 }
 
 void CConnect::broadLeaveDesk()

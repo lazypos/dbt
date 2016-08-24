@@ -11,6 +11,9 @@
 USING_NS_CC;
 
 #define  DEF_cardsep 18
+string 						_recvType;
+map<string, string>			_mapRecv;
+mutex						_muxRecv;
 
 Scene* CDeskScene::createScene()
 {
@@ -171,139 +174,139 @@ bool CDeskScene::init()
 	ptr->_y = 250;
 	_vecPlayers.push_back(ptr);
 	//->下家
-	ptr = make_shared<st_player_info>();
-	ptr->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_nickName->setPosition(Vec2(visibleSize.width - 135,
+	playerPtr ptr1 = make_shared<st_player_info>();
+	ptr1->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr1->_nickName->setPosition(Vec2(visibleSize.width - 135,
 		userInfo1->getPosition().y));
-	ptr->_nickName->setColor(Color3B::BLACK);
-	this->addChild(ptr->_nickName);
-	ptr->_score = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_score->setPosition(Vec2(visibleSize.width - 40,
+	ptr1->_nickName->setColor(Color3B::BLACK);
+	this->addChild(ptr1->_nickName);
+	ptr1->_score = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr1->_score->setPosition(Vec2(visibleSize.width - 40,
 		userInfo1->getPosition().y));
-	ptr->_score->setColor(Color3B::BLACK);
-	this->addChild(ptr->_score);
-	ptr->_total = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_total->setPosition(Vec2(visibleSize.width - 135,
+	ptr1->_score->setColor(Color3B::BLACK);
+	this->addChild(ptr1->_score);
+	ptr1->_total = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr1->_total->setPosition(Vec2(visibleSize.width - 135,
 		winInfo1->getPosition().y));
-	ptr->_total->setColor(Color3B::BLACK);
-	this->addChild(ptr->_total);
-	ptr->_win = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_win->setPosition(Vec2(visibleSize.width - 40,
+	ptr1->_total->setColor(Color3B::BLACK);
+	this->addChild(ptr1->_total);
+	ptr1->_win = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr1->_win->setPosition(Vec2(visibleSize.width - 40,
 		winInfo1->getPosition().y));
-	ptr->_win->setColor(Color3B::BLACK);
-	this->addChild(ptr->_win);
-	ptr->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_surplus->setPosition(Vec2(visibleSize.width - 135,
+	ptr1->_win->setColor(Color3B::BLACK);
+	this->addChild(ptr1->_win);
+	ptr1->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr1->_surplus->setPosition(Vec2(visibleSize.width - 135,
 		surplus1->getPosition().y));
-	ptr->_surplus->setColor(Color3B::BLACK);
-	this->addChild(ptr->_surplus);
-	ptr->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
-	ptr->_time->setPosition(Vec2(visibleSize.width / 2 + 260, 600));
-	ptr->_time->setVisible(false);
-	this->addChild(ptr->_time);
-	ptr->_ready = Sprite::create();
-	ptr->_ready->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("zhunbei"));
-	ptr->_ready->setPosition(Vec2(visibleSize.width / 2+350,
+	ptr1->_surplus->setColor(Color3B::BLACK);
+	this->addChild(ptr1->_surplus);
+	ptr1->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
+	ptr1->_time->setPosition(Vec2(visibleSize.width / 2 + 260, 600));
+	ptr1->_time->setVisible(false);
+	this->addChild(ptr1->_time);
+	ptr1->_ready = Sprite::create();
+	ptr1->_ready->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("zhunbei"));
+	ptr1->_ready->setPosition(Vec2(visibleSize.width / 2+350,
 		(visibleSize.height / 2)));
-	ptr->_ready->setVisible(false);
-	this->addChild(ptr->_ready);
-	ptr->_gone = LabelAtlas::create("0", "num.png", 14, 21, '0');
-	ptr->_gone->setPosition(Vec2(visibleSize.width / 2 + 260, 600));
-	ptr->_gone->setVisible(false);
-	this->addChild(ptr->_gone);
-	ptr->_x = visibleSize.width / 2;
-	ptr->_y = visibleSize.height / 2;
-	_vecPlayers.push_back(ptr);
+	ptr1->_ready->setVisible(false);
+	this->addChild(ptr1->_ready);
+	ptr1->_gone = LabelAtlas::create("0", "num.png", 14, 21, '0');
+	ptr1->_gone->setPosition(Vec2(visibleSize.width / 2 + 260, 600));
+	ptr1->_gone->setVisible(false);
+	this->addChild(ptr1->_gone);
+	ptr1->_x = visibleSize.width / 2;
+	ptr1->_y = visibleSize.height / 2;
+	_vecPlayers.push_back(ptr1);
 	//对家
-	ptr = make_shared<st_player_info>();
-	ptr->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_nickName->setPosition(Vec2(visibleSize.width / 2 - 135,
+	playerPtr ptr2 = make_shared<st_player_info>();
+	ptr2->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr2->_nickName->setPosition(Vec2(visibleSize.width / 2 - 135,
 		userInfo3->getPosition().y));
-	ptr->_nickName->setColor(Color3B::BLACK);
-	this->addChild(ptr->_nickName);
-	ptr->_score = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_score->setPosition(Vec2(visibleSize.width / 2 - 40,
+	ptr2->_nickName->setColor(Color3B::BLACK);
+	this->addChild(ptr2->_nickName);
+	ptr2->_score = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr2->_score->setPosition(Vec2(visibleSize.width / 2 - 40,
 		userInfo3->getPosition().y));
-	ptr->_score->setColor(Color3B::BLACK);
-	this->addChild(ptr->_score);
-	ptr->_total = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_total->setPosition(Vec2(visibleSize.width /2 + 60,
+	ptr2->_score->setColor(Color3B::BLACK);
+	this->addChild(ptr2->_score);
+	ptr2->_total = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr2->_total->setPosition(Vec2(visibleSize.width /2 + 60,
 		winInfo3->getPosition().y));
-	ptr->_total->setColor(Color3B::BLACK);
-	this->addChild(ptr->_total);
-	ptr->_win = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_win->setPosition(Vec2(visibleSize.width /2 + 165,
+	ptr2->_total->setColor(Color3B::BLACK);
+	this->addChild(ptr2->_total);
+	ptr2->_win = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr2->_win->setPosition(Vec2(visibleSize.width /2 + 165,
 		winInfo3->getPosition().y));
-	ptr->_win->setColor(Color3B::BLACK);
-	this->addChild(ptr->_win);
-	ptr->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_surplus->setPosition(Vec2(visibleSize.width /2 - 35,
+	ptr2->_win->setColor(Color3B::BLACK);
+	this->addChild(ptr2->_win);
+	ptr2->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr2->_surplus->setPosition(Vec2(visibleSize.width /2 - 35,
 		surplus3->getPosition().y));
-	ptr->_surplus->setColor(Color3B::BLACK);
-	this->addChild(ptr->_surplus);
-	ptr->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
-	ptr->_time->setPosition(Vec2(visibleSize.width / 2 + 140, 
+	ptr2->_surplus->setColor(Color3B::BLACK);
+	this->addChild(ptr2->_surplus);
+	ptr2->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
+	ptr2->_time->setPosition(Vec2(visibleSize.width / 2 + 140,
 		surplus3->getPosition().y - 20));
-	ptr->_time->setVisible(false);
-	this->addChild(ptr->_time);
-	ptr->_ready = Sprite::create();
-	ptr->_ready->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("zhunbei"));
-	ptr->_ready->setPosition(Vec2(visibleSize.width / 2,
+	ptr2->_time->setVisible(false);
+	this->addChild(ptr2->_time);
+	ptr2->_ready = Sprite::create();
+	ptr2->_ready->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("zhunbei"));
+	ptr2->_ready->setPosition(Vec2(visibleSize.width / 2,
 		(visibleSize.height / 2) + 200));
-	ptr->_ready->setVisible(false);
-	this->addChild(ptr->_ready);
-	ptr->_gone = LabelAtlas::create("0", "num.png", 14, 21, '0');
-	ptr->_gone->setPosition(Vec2(visibleSize.width / 2 + 140,
+	ptr2->_ready->setVisible(false);
+	this->addChild(ptr2->_ready);
+	ptr2->_gone = LabelAtlas::create("0", "num.png", 14, 21, '0');
+	ptr2->_gone->setPosition(Vec2(visibleSize.width / 2 + 140,
 		surplus3->getPosition().y - 20));
-	ptr->_gone->setVisible(false);
-	this->addChild(ptr->_gone);
-	ptr->_x = visibleSize.width / 2 - 200;
-	ptr->_y = visibleSize.height / 2 + 200;
-	_vecPlayers.push_back(ptr);
+	ptr2->_gone->setVisible(false);
+	this->addChild(ptr2->_gone);
+	ptr2->_x = visibleSize.width / 2 - 200;
+	ptr2->_y = visibleSize.height / 2 + 200;
+	_vecPlayers.push_back(ptr2);
 	//上家
-	ptr = make_shared<st_player_info>();
-	ptr->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_nickName->setPosition(Vec2(70,
+	playerPtr ptr3 = make_shared<st_player_info>();
+	ptr3->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr3->_nickName->setPosition(Vec2(70,
 		userInfo1->getPosition().y));
-	ptr->_nickName->setColor(Color3B::BLACK);
-	this->addChild(ptr->_nickName);
-	ptr->_score = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_score->setPosition(Vec2(160,
+	ptr3->_nickName->setColor(Color3B::BLACK);
+	this->addChild(ptr3->_nickName);
+	ptr3->_score = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr3->_score->setPosition(Vec2(160,
 		userInfo1->getPosition().y));
-	ptr->_score->setColor(Color3B::BLACK);
-	this->addChild(ptr->_score);
-	ptr->_total = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_total->setPosition(Vec2(70,
+	ptr3->_score->setColor(Color3B::BLACK);
+	this->addChild(ptr3->_score);
+	ptr3->_total = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr3->_total->setPosition(Vec2(70,
 		winInfo1->getPosition().y));
-	ptr->_total->setColor(Color3B::BLACK);
-	this->addChild(ptr->_total);
-	ptr->_win = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_win->setPosition(Vec2(160,
+	ptr3->_total->setColor(Color3B::BLACK);
+	this->addChild(ptr3->_total);
+	ptr3->_win = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr3->_win->setPosition(Vec2(160,
 		winInfo1->getPosition().y));
-	ptr->_win->setColor(Color3B::BLACK);
-	this->addChild(ptr->_win);
-	ptr->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_surplus->setPosition(Vec2(70,
+	ptr3->_win->setColor(Color3B::BLACK);
+	this->addChild(ptr3->_win);
+	ptr3->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr3->_surplus->setPosition(Vec2(70,
 		surplus1->getPosition().y));
-	ptr->_surplus->setColor(Color3B::BLACK);
-	this->addChild(ptr->_surplus);
-	ptr->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
-	ptr->_time->setPosition(Vec2(visibleSize.width / 2 - 280, 600));
-	ptr->_time->setVisible(false);
-	this->addChild(ptr->_time);
-	ptr->_ready = Sprite::create();
-	ptr->_ready->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("zhunbei"));
-	ptr->_ready->setPosition(Vec2(visibleSize.width / 2-350,
+	ptr3->_surplus->setColor(Color3B::BLACK);
+	this->addChild(ptr3->_surplus);
+	ptr3->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
+	ptr3->_time->setPosition(Vec2(visibleSize.width / 2 - 280, 600));
+	ptr3->_time->setVisible(false);
+	this->addChild(ptr3->_time);
+	ptr3->_ready = Sprite::create();
+	ptr3->_ready->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("zhunbei"));
+	ptr3->_ready->setPosition(Vec2(visibleSize.width / 2-350,
 		visibleSize.height / 2));
-	ptr->_ready->setVisible(false);
-	this->addChild(ptr->_ready);
-	ptr->_gone = LabelAtlas::create("0", "num.png", 14, 21, '0');
-	ptr->_gone->setPosition(Vec2(visibleSize.width / 2 - 280, 600));
-	ptr->_gone->setVisible(false);
-	this->addChild(ptr->_gone);
-	ptr->_x = 0;
-	ptr->_y = visibleSize.height / 2;
-	_vecPlayers.push_back(ptr);
+	ptr3->_ready->setVisible(false);
+	this->addChild(ptr3->_ready);
+	ptr3->_gone = LabelAtlas::create("0", "num.png", 14, 21, '0');
+	ptr3->_gone->setPosition(Vec2(visibleSize.width / 2 - 280, 600));
+	ptr3->_gone->setVisible(false);
+	this->addChild(ptr3->_gone);
+	ptr3->_x = 0;
+	ptr3->_y = visibleSize.height / 2;
+	_vecPlayers.push_back(ptr3);
 
 	this->scheduleUpdate();
 	this->schedule(CC_SCHEDULE_SELECTOR(CDeskScene::playerSchedule), 1.0);
@@ -338,6 +341,7 @@ void CDeskScene::onReturn(Ref *pSender, ui::Widget::TouchEventType type)
 			return;
 		}
 		messageQueue::instance()->sendMessage("cmd=desk;type=quit");
+		__NotificationCenter::getInstance()->removeObserver(this, "desk");
 		Scene *hScene = CHallScene::createScene();
 		Director::getInstance()->replaceScene(hScene);
 	}
@@ -373,6 +377,103 @@ void CDeskScene::onPut(Ref *pSender, ui::Widget::TouchEventType type)
 
 void CDeskScene::update(float dt)
 {
+	lock_guard<mutex> lg(_muxRecv);
+	if (!_recvType.empty()){
+		if (_recvType == "getmsg"){
+			auto it = _mapRecv.find("desknum");//桌号
+			if (it != _mapRecv.end())
+				_labelDeskNum->setString(it->second);
+			_seatNum = atoi(_mapRecv["id"].c_str());
+			int i = _seatNum;
+			for (auto it : _vecPlayers) {
+				_mapPlayers[i % 4] = it;
+				it->id = i % 4;
+				i++;
+			}
+			string players = _mapRecv["player"];
+			//当前桌子上的人员信息
+			if (players.length() > 0) {
+				list<string> tmp;
+				stringToList(players, tmp, "|");
+				for (const auto& it : tmp)
+					playerAdd(it);
+			}
+		}else if (_recvType == "play"){
+			playerPtr ptr = _mapPlayers[atoi(_mapRecv["id"].c_str())];
+			//准备
+			if (_mapRecv["state"] == "ready") {
+				ptr->_ready->setVisible(true);
+			}
+			//游戏开始
+			else if (_mapRecv["state"] == "start") {
+				_isSatrting = true;
+				_btReady->setVisible(false);
+				for (const auto&it : _mapPlayers) {
+					it.second->_surplus->setString("54");
+					it.second->_ready->setVisible(false);
+				}
+				vector<string> ctmp;
+				stringToVector(_mapRecv["cards"], ctmp, ",");
+				for (auto it : ctmp)
+					_vecStartCards.push_back(atoi(it.c_str()));
+				sort(_vecStartCards.begin(), _vecStartCards.end());
+				_recvtype = recv_start;
+				//谁出牌
+				int putid = atoi(_mapRecv["now"].c_str());
+				putCard(putid, true);
+			}
+			//玩家离开
+			else if (_mapRecv["state"] == "leave") {
+				playerLeave(ptr);
+			}
+			//玩家加入
+			else if (_mapRecv["state"] == "add") {
+				playerAdd(_mapRecv["player"]);
+			}
+			//玩家出牌/不出
+			else if (_mapRecv["state"] == "put") {
+				string cards = _mapRecv["cards"];
+				int perid = atoi(_mapRecv["per"].c_str());
+				int putid = atoi(_mapRecv["now"].c_str());
+				int surplus = atoi(_mapRecv["surplus"].c_str());
+				putPerCard(perid, cards, surplus, _mapRecv["go"]);
+				if (putid != -1)
+					putCard(putid, _mapRecv["clear"] == "1");
+			}
+			//玩家得分
+			else if (_mapRecv["state"] == "score") {
+				if (_seatNum % 2 == 0) {
+					_labelWeScore->setString(_mapRecv["0"]);
+					_labelTheyScore->setString(_mapRecv["1"]);
+				}
+				else {
+					_labelWeScore->setString(_mapRecv["1"]);
+					_labelTheyScore->setString(_mapRecv["0"]);
+				}
+			}
+			//游戏结束
+			else if (_mapRecv["state"] == "over") {
+				//把一些状态清空
+				_isSatrting = false;
+				_card_select_per = nullptr;
+				_isExit = false;
+				updateScore(0, atoi(_mapRecv["s0"].c_str()));
+				updateScore(1, atoi(_mapRecv["s1"].c_str()));
+				updateScore(2, atoi(_mapRecv["s2"].c_str()));
+				updateScore(3, atoi(_mapRecv["s3"].c_str()));
+				ostringstream os;
+				os << _mapRecv["n0"] << " " << _mapRecv["s0"] << "\r\n"
+					<< _mapRecv["n1"] << " " << _mapRecv["s1"] << "\r\n"
+					<< _mapRecv["n2"] << " " << _mapRecv["s2"] << "\r\n"
+					<< _mapRecv["n3"] << " " << _mapRecv["s3"] << "\r\n";
+				MessageBox(os.str().c_str(), "游戏结束");
+				_over = true;
+				_clear = true;
+			}
+		}
+		_recvType.clear();
+	}
+
 	//一开始的手牌
 	if (_recvtype == recv_start){
 		_recvtype = 0;
@@ -483,106 +584,19 @@ void CDeskScene::playerSchedule(float dt)
 
 void CDeskScene::ObserverPlaying(Ref* sendmsg)
 {
+	lock_guard<mutex> lg(_muxRecv);
 	__String* p = (__String*)sendmsg;
 	map<string, string> mapRst;
 	stringToMap(p->_string, mapRst, ";");
 	//获取信息
 	if (mapRst["type"] == "getmsg"){
-		auto it = mapRst.find("desknum");//桌号
-		if (it != mapRst.end())
-			_labelDeskNum->setString(it->second);
-		it = mapRst.find("id");
-		if (it != mapRst.end()) {//自己的座位号
-			_seatNum = atoi(it->second.c_str());
-			int i = _seatNum;
-			for (auto it : _vecPlayers) {
-				_mapPlayers[i%4] = it;
-				it->id = i % 4;
-				i++;
-			}
-		}
-		string players = mapRst["player"];
-		//当前桌子上的人员信息
-		if (players.length() > 0){
-			list<string> tmp;
-			stringToList(players, tmp, "|");
-			for (const auto& it : tmp)
-				playerAdd(it);
-		}
+		_recvType = "getmsg";
+		_mapRecv = mapRst;
 	}
 	//游戏
 	if (mapRst["type"] == "play"){
-		playerPtr ptr = _mapPlayers[atoi(mapRst["id"].c_str())];
-		//准备
-		if (mapRst["state"] == "ready"){
-			ptr->_ready->setVisible(true);
-		}
-		//游戏开始
-		else if (mapRst["state"] == "start") {
-			_isSatrting = true;
-			_btReady->setVisible(false);
-			for (const auto&it : _mapPlayers) {
-				it.second->_surplus->setString("54");
-				it.second->_ready->setVisible(false);
-			}
-			vector<string> ctmp;
-			stringToVector(mapRst["cards"], ctmp, ",");
-			for (auto it : ctmp)
-				_vecStartCards.push_back(atoi(it.c_str()));
-			sort(_vecStartCards.begin(), _vecStartCards.end());
-			_recvtype = recv_start;
-			//谁出牌
-			int putid = atoi(mapRst["now"].c_str());
-			putCard(putid, true);
-		}
-		//玩家离开
-		else if (mapRst["state"] == "leave") {
-			playerLeave(ptr);
-		}
-		//玩家加入
-		else if (mapRst["state"] == "add"){
-			playerAdd(mapRst["player"]);
-		}
-		//玩家出牌/不出
-		else if (mapRst["state"] == "put"){
-			string cards = mapRst["cards"];
-			int perid = atoi(mapRst["per"].c_str());
-			int putid = atoi(mapRst["now"].c_str());
-			int surplus = atoi(mapRst["surplus"].c_str());
-			putPerCard(perid, cards, surplus, mapRst["go"]);
-			if (putid != -1)
-				putCard(putid, mapRst["clear"] == "1");
-		}
-		//玩家得分
-		else if (mapRst["state"] == "score"){
-			if (_seatNum % 2 == 0) {
-				_labelWeScore->setString(mapRst["0"]);
-				_labelTheyScore->setString(mapRst["1"]);
-			}
-			else {
-				_labelWeScore->setString(mapRst["1"]);
-				_labelTheyScore->setString(mapRst["0"]);
-			}
-		}
-		//游戏结束
-		else if (mapRst["state"] == "over"){
-			//把一些状态清空
-			_isSatrting = false;
-			_card_select_per = nullptr;
-			_isExit = false;
-			updateScore(0, atoi(mapRst["s0"].c_str()));
-			updateScore(1, atoi(mapRst["s1"].c_str()));
-			updateScore(2, atoi(mapRst["s2"].c_str()));
-			updateScore(3, atoi(mapRst["s3"].c_str()));
-			ostringstream os;
-			os << mapRst["n0"] << " " << mapRst["s0"] << "\r\n"
-				<< mapRst["n1"] << " " << mapRst["s1"] << "\r\n"
-				<< mapRst["n2"] << " " << mapRst["s2"] << "\r\n"
-				<< mapRst["n3"] << " " << mapRst["s3"] << "\r\n";
-			MessageBox(os.str().c_str(),"游戏结束");
-			_over = true;
-			_clear = true;
-		}
+		_recvType = "play";
+		_mapRecv = mapRst;
 	}
 }
 

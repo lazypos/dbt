@@ -17,6 +17,7 @@ int CDesk::addPlayer(player_ptr ptr)
 	for (size_t i = 0; i < _vecPlayers.size(); ++i) {
 		if (_vecPlayers[i] == nullptr){
 			_vecPlayers[i] == ptr;
+			ptr->setSeatId(i);
 			return i;
 		}
 	}
@@ -37,4 +38,5 @@ void CDesk::reStart()
 		_vecPlayers[i]->reStart();
 	}
 }
+
 
