@@ -32,8 +32,6 @@ private:
 
 	ui::Button* btlogin;
 	ui::Button* btreg;
-
-	bool	bSend = false;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

@@ -205,7 +205,6 @@ void CConnect::broadAddDesk()
 			players[i] = nullptr;
 		}
 	}
-	//
 }
 
 void CConnect::broadLeaveDesk()
@@ -219,6 +218,7 @@ void CConnect::broadLeaveDesk()
 		if (i != _seatId && players[i] != nullptr)
 			static_cast<CConnect*>(players[i].get())->replay(os.str());
 	}
+	hallMgr::Instance()->leave_desk(shared_from_this());
 	_deskId = -1;
 	_seatId = -1;
 }

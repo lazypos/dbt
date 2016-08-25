@@ -16,10 +16,10 @@ mutex						_hallmuxRecv;
 
 Scene* CHallScene::createScene()
 {
-    auto scene = Scene::create();
+    auto _scene = Scene::create();
     auto layer = CHallScene::create();
-	scene->addChild(layer);
-    return scene;
+	_scene->addChild(layer);
+    return _scene;
 }
 
 bool CHallScene::init()
@@ -97,14 +97,14 @@ bool CHallScene::init()
 	this->scheduleUpdate();
 	bsend = false;
 	//注册观察者
-	__NotificationCenter::getInstance()->addObserver(this, CC_CALLFUNCO_SELECTOR(CHallScene::ObserverAddDesk), "hall", nullptr);
+	__NotificationCenter::getInstance()->addObserver(this, SEL_CallFuncO(&CHallScene::ObserverAddDesk), "hall", nullptr);
 	messageQueue::instance()->sendMessage("cmd=hall;type=getmsg");
     return true;
 }
 
 void CHallScene::OnFindDesk(Ref *pSender, ui::Widget::TouchEventType type)
 {
-	if (type == ui::Widget::TouchEventType::ENDED && !bsend) {
+	if (type == ui::Widget::TouchEventType::ENDED /*&& !bsend*/) {
 		string deskNum = _editDesk->getText();
 		if (atoi(_editDesk->getText()) == 0) {
 			cocos2d::MessageBox("桌号只能是大于0的数字！", "Warning");
@@ -118,7 +118,7 @@ void CHallScene::OnFindDesk(Ref *pSender, ui::Widget::TouchEventType type)
 
 void CHallScene::OnCreateDesk(Ref *pSender, ui::Widget::TouchEventType type)
 {
-	if (type == ui::Widget::TouchEventType::ENDED && !bsend) {
+	if (type == ui::Widget::TouchEventType::ENDED /*&& !bsend*/) {
 		//发送
 		if (messageQueue::instance()->sendMessage("cmd=hall;type=create"))
 			bsend = true;
@@ -127,14 +127,10 @@ void CHallScene::OnCreateDesk(Ref *pSender, ui::Widget::TouchEventType type)
 
 void CHallScene::OnFastAddDesk(Ref *pSender, ui::Widget::TouchEventType type)
 {
-	if (type == ui::Widget::TouchEventType::ENDED && !bsend) {
+	if (type == ui::Widget::TouchEventType::ENDED /*&& !bsend*/) {
 		//发送
 		if (messageQueue::instance()->sendMessage("cmd=hall;type=add"))
 			bsend = true;
-#ifdef _DEBUG
-// 		Scene *scene = CDeskScene::createScene();
-// 		Director::getInstance()->replaceScene(scene);
-#endif
 	}
 }
 
@@ -169,9 +165,9 @@ void CHallScene::update(float delta)
 	if (changeScene){
 		changeScene = false;
 		//加入桌子成功，取消观察，场景切换
-		__NotificationCenter::getInstance()->removeObserver(this, "hall");
+		//__NotificationCenter::getInstance()->removeObserver(this, "hall");
 		Scene *scene = CDeskScene::createScene();
-		Director::getInstance()->replaceScene(scene);
+		Director::getInstance()->pushScene(scene);
 	}
 
 	if (_hallrecvType == "getmsg"){

@@ -14,13 +14,16 @@ USING_NS_CC;
 string 						_recvType;
 map<string, string>			_mapRecv;
 mutex						_muxRecv;
+int							_recvtype = 0;
+bool						_clear = false;
+bool						_over = false;
 
 Scene* CDeskScene::createScene()
 {
-    auto scene = Scene::create();
+	auto _scene = Scene::create();
     auto layer = CDeskScene::create();
-	scene->addChild(layer);
-    return scene;
+	_scene->addChild(layer);
+    return _scene;
 }
 
 bool CDeskScene::init()
@@ -317,7 +320,7 @@ bool CDeskScene::init()
 	listener->onTouchMoved = CC_CALLBACK_2(CDeskScene::onTouchMoved, this);
 	dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
-	__NotificationCenter::getInstance()->addObserver(this, CC_CALLFUNCO_SELECTOR(CDeskScene::ObserverPlaying), "desk", nullptr);
+	__NotificationCenter::getInstance()->addObserver(this, SEL_CallFuncO(&CDeskScene::ObserverPlaying), "desk", nullptr);
 	messageQueue::instance()->sendMessage("cmd=desk;type=getmsg");
     return true;
 }
@@ -340,10 +343,11 @@ void CDeskScene::onReturn(Ref *pSender, ui::Widget::TouchEventType type)
 			_isExit = true;
 			return;
 		}
+		//__NotificationCenter::getInstance()->removeObserver(this, "desk");
 		messageQueue::instance()->sendMessage("cmd=desk;type=quit");
-		__NotificationCenter::getInstance()->removeObserver(this, "desk");
-		Scene *hScene = CHallScene::createScene();
-		Director::getInstance()->replaceScene(hScene);
+		//Scene *hScene = CHallScene::createScene();
+		//Director::getInstance()->replaceScene(hScene);
+		Director::getInstance()->popScene();
 	}
 }
 

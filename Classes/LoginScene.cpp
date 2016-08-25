@@ -9,6 +9,7 @@
 
 USING_NS_CC;
 bool	replaceScene = false;
+bool	bSend = false;
 
 Scene* CLoginScene::createScene()
 {
@@ -22,7 +23,7 @@ bool CLoginScene::init()
 {
     if (!Layer::init())
         return false;
-
+	bSend = false;
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	auto editBoxSize = Size(220, 50);
 
@@ -116,7 +117,7 @@ bool CLoginScene::init()
 	
 	this->scheduleUpdate();
 	//注册观察者
-	__NotificationCenter::getInstance()->addObserver(this, CC_CALLFUNCO_SELECTOR(CLoginScene::ObserverLoginRegiste), "logn", nullptr);
+	__NotificationCenter::getInstance()->addObserver(this, SEL_CallFuncO(&CLoginScene::ObserverLoginRegiste), "logn", nullptr);
     return true;
 }
 
@@ -142,10 +143,6 @@ void CLoginScene::onLoginTouch(Ref *pSender, ui::Widget::TouchEventType type)
 		os << "cmd=login;type=login;user=" << user
 			<< ";pass=" << password;
 		messageQueue::instance()->sendMessage(os.str());
-#ifdef _DEBUG
-// 		Scene *hall = CHallScene::createScene();
-// 		Director::getInstance()->replaceScene(hall);
-#endif
 	}
 }
 
@@ -214,9 +211,9 @@ void CLoginScene::update(float dt)
 	if (replaceScene){
 		replaceScene = false;
 		//登陆成功，取消观察，场景切换(不能直接在此处切换)
-		__NotificationCenter::getInstance()->removeObserver(this, "logn");
+		//__NotificationCenter::getInstance()->removeObserver(this, "logn");
 		Scene *hall = CHallScene::createScene();
-		Director::getInstance()->replaceScene(hall);
+		Director::getInstance()->pushScene(hall);
 	}
 }
 

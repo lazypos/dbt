@@ -14,10 +14,10 @@ public:
 	int		createDesk(player_ptr ptr);
 
 	desk_ptr	getDeskInfo(int id);
+	void	leave_desk(player_ptr ptr);
 
 protected:
 	int		create_desk(player_ptr ptr);
-	void	leave_desk(player_ptr ptr);
 private:
 	map<int, desk_ptr>	_mapDesk;
 	mutex				_muxHall;

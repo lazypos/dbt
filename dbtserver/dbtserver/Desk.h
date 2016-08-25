@@ -35,6 +35,7 @@ public:
 	}
 
 	void	reStart();
+	void	leave(player_ptr ptr);
 
 	vector<int>				_lastPutCards;
 private:

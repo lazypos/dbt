@@ -24,6 +24,7 @@ public:
 
 	void update(float delta);
 private:
+	//Scene	*_scene;
 	ui::EditBox *_editDesk;
 	ui::Button* btCreadAdd;
 	ui::Button* btFastAdd;

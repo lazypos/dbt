@@ -60,6 +60,7 @@ public:
 	void    playerSchedule(float dt);
 
 private:
+	//static Scene	*_scene;
 	ui::Button* _btReturn;
 	ui::Button* _btReady;
 	ui::Button* _btNoput; 
@@ -87,9 +88,6 @@ private:
 #define recv_start 1
 #define recv_review 2
 	vector<int>					_vecStartCards;
-	int							_recvtype = 0;
-	bool						_clear = false;
-	bool						_over = false;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

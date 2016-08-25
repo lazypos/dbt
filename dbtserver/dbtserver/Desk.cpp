@@ -39,4 +39,9 @@ void CDesk::reStart()
 	}
 }
 
+void CDesk::leave(player_ptr ptr)
+{
+	lock_guard<mutex> ul(_muxDesk);
+	_vecPlayers[ptr->getSeatId()] = nullptr;
+}
 
